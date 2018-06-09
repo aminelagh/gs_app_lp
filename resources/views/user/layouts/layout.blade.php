@@ -47,7 +47,8 @@
           <div class="collapse navbar-collapse" id="navbar-collapse">
 
             <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Accueil<span class="sr-only">(current)</span></a></li>
+              <li class="active"><a href="{{ route('accueil') }}">Accueil</a></li>
+              <li class="active"><a href="{{ route('stock') }}">Stock</a></li>
               <li><a href="#">Link</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Create <span class="caret"></span></a>
@@ -226,8 +227,8 @@
   <script src="{{ asset('toastr/toastr.min.js') }}"></script>
   <script src="{{ asset('toastr/toastr.init.js') }}"></script>
   <!-- DATA TABES SCRIPT -->
-  <script src="{{ asset('plugins/datatables/jquery.dataTables.js') }}" type="text/javascript"></script>
-  <script src="{{ asset('plugins/datatables/dataTables.bootstrap.js') }}" type="text/javascript"></script>
+
+  <script src="{{ asset('plugins/datatables2/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
 
 
   <script>
@@ -274,40 +275,3 @@
 @yield('scripts')
 </body>
 </html>
-
-
-
-
-
-
-{{--
-
-<!-- Toastr -->
-<link href="{{ asset('public/css/lib/toastr/toastr.min.css') }}" rel="stylesheet">
-<script src="{{ asset('public/assets/less/less.js') }}"></script>
-
-
-
-<!--jQuery -->
-<script src="{{ asset('public/assets/lib/jquery/jquery.js') }}"></script>
-<!--Bootstrap -->
-<script src="{{ asset('public/assets/lib/bootstrap/js/bootstrap.js') }}"></script>
-<!-- MetisMenu -->
-<script src="{{ asset('public/assets/lib/metismenu/metisMenu.js') }}"></script>
-<!-- onoffcanvas -->
-<script src="{{ asset('public/assets/lib/onoffcanvas/onoffcanvas.js') }}"></script>
-<!-- Screenfull -->
-<script src="{{ asset('public/assets/lib/screenfull/screenfull.js') }}"></script>
-<!-- Metis core scripts -->
-<script src="{{ asset('public/assets/js/core.js') }}"></script>
-<!-- Metis demo scripts -->
-<script src="{{ asset('public/assets/js/app.js') }}"></script>
-<!-- switcher -->
-<script src="{{ asset('public/assets/js/style-switcher.js') }}"></script>
-<!--Toastr -->
-<script src="{{ asset('public/js/lib/toastr/toastr.min.js') }}"></script>
-<script src="{{ asset('public/js/lib/toastr/toastr.init.js') }}"></script>
-<!-- Bootstrap-Select -->
-<script src="{{ asset('public/bootstrap-select/bootstrap-select.min.js') }}"></script>
-
---}}

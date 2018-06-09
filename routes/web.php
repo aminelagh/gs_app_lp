@@ -32,6 +32,10 @@ Route::group(['middleware' => 'user'], function () {
   Route::get('/', 'UserController@accueil')->name('accueil');
   Route::post('/updateProfil', 'UserController@updateProfil')->name('updateProfile');
 
+  Route::get('/stock', 'StockController@stock')->name('stock');
+  Route::post('/addStockIN','StockController@addStockIN')->name('addStockIN');
+
+  Route::get('/categorie/{id_categorie}','UserController@categorie')->name('categorie');
   Route::post('/addCategorie', 'UserController@addCategorie')->name('addCategorie');
   Route::post('/updateCategorie', 'UserController@updateCategorie')->name('updateCategorie');
   Route::post('/deleteCategorie', 'UserController@deleteCategorie')->name('deleteCategorie');

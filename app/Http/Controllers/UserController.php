@@ -18,7 +18,11 @@ class UserController extends Controller
 {
   public function accueil(Request $request){
     $categories = Categorie::all();
-    $articles = Article::all();
+    $articles = collect(DB::select(
+      "SELECT c.libelle as libelle_categorie, a.*
+      FROM articles a
+      LEFT JOIN categories c ON c.id_categorie=a.id_categorie;"
+    ));
     $unites = Unite::all();
     return view('user.accueil')->with(compact('articles','categories','unites'));
   }
@@ -99,6 +103,10 @@ class UserController extends Controller
     return redirect()->back()->with('alert_success',"Element supprimée");
   }
   //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+  public function categorie($id_categorie, Request $request){
+    return "Categorie: $id_categorie";
+  }
 
 
 }

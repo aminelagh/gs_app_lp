@@ -16,13 +16,13 @@
     <div class="col-lg-3 col-xs-6">
       <div class="small-box bg-aqua">
         <div class="inner">
-          <h3>150</h3>
+          <h3>{{ $articles->count() }}</h3>
           <p>Articles</p>
         </div>
         <div class="icon">
           <i class="ion ion-bag"></i>
         </div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="#" class="small-box-footer">Plus de details <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 
@@ -73,15 +73,10 @@
       {{-- *********************************** Categories ************************************* --}}
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">Catégories <span class="badge badge-succuess badge-pill" title="Nombre de categories"> {{ $categories->count() }}</span></h3>
+          <h3 class="box-title">Catégories <span class="badge badge-succuess badge-pill" title="Nombre de catégories"> {{ $categories->count() }}</span></h3>
           <div class="box-tools pull-right">
+            <button  data-toggle="modal" href="#modalAddCategorie" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter catégorie</button>
             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <div class="btn-group">
-              <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench"></i></button>
-              <ul class="dropdown-menu" role="menu">
-                <li><a data-toggle="modal" data-original-title="Profile" data-placement="bottom" href="#modalAddCategorie">Ajouter catégorie</a></li>
-              </ul>
-            </div>
             <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
           </div>
         </div>
@@ -114,29 +109,25 @@
       {{-- *********************************** Articles ************************************* --}}
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">Articles <span class="badge badge-succuess badge-pill" title="Nombre de categories"> {{ $articles->count() }}</span></h3>
+          <h3 class="box-title">Articles <span class="badge badge-succuess badge-pill" title="Nombre d'articles"> {{ $articles->count() }}</span></h3>
           <div class="box-tools pull-right">
+            <button data-toggle="modal" href="#modalAddArticle" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter article</button>
             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <div class="btn-group">
-              <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench"></i></button>
-              <ul class="dropdown-menu" role="menu">
-                <li><a data-toggle="modal" data-original-title="Profile" data-placement="bottom" href="#modalAddArticle">Ajouter article</a></li>
-              </ul>
-            </div>
             <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
           </div>
         </div>
         <div class="box-body">
           <div class="row">
             <div class=" col-md-12">
-              <table id="categoriesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Outils</th></tr></thead>
+              <table id="articlesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Outils</th></tr></thead>
                 <tbody>
                   @foreach($articles as $item)
                     <tr align="center">
+                      <td>{{ $item->id_article }}</td>
                       <td>{{ $item->code }}</td>
                       <td>{{ $item->designation }}</td>
-                      <td>{{ $item->id_categorie }}</td>
+                      <td><a href="{{ route('categorie',[$item->id_categorie]) }}">{{ $item->libelle_categorie }}</a></td>
                       <td align="center">
                         <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateArticle"
                         onclick='updateArticleFunction({{ $item->id_article }},{{ $item->id_categorie }},{{ $item->id_unite }},"{{ $item->code }}","{{ $item->designation }}","{{ $item->description }}");' title="Modifier" ></i>
@@ -151,7 +142,7 @@
         </div>
         <div class="box-footer"></div>
       </div>
-      {{-- *********************************** Categories ************************************* --}}
+      {{-- *********************************** Articles ************************************* --}}
     </div>
 
   </div>
@@ -400,22 +391,35 @@
   <script>
   $(document).ready(function(){
     $('#categoriesTable').DataTable({
-      dom: '<lf<Bt>ip>',
+      "dom": '<lf<Bt>ip>',
       "info": false,
-      buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print',
-      ],
-      lengthMenu: [
+      "lengthMenu": [
         [ 5, 10, 25, 50, -1 ],
         [ '5', '10', '25', '50', 'Tout' ]
       ],
-      columnDefs: [
+      "columnDefs": [
         //{ targets:-1, visible: true, orderable: true, searchable: true},
         //{ targets: 0, visible: true, type: "num"},
         //{ targets: 1, visible: true},
       ],
       //order: [[ 0, "asc" ]],
     });
+
+    $('#articlesTable').DataTable({
+      dom: '<lf<Bt>ip>',
+      info: false,
+      lengthMenu: [
+        [ 5, 10, 25, 50, -1 ],
+        [ '5', '10', '25', '50', 'Tout' ]
+      ],
+      columnDefs: [
+        { targets: 0, visible: false, orderable: true, searchable: true},
+        //{ targets: 0, visible: true, type: "num"},
+        //{ targets: 1, visible: true},
+      ],
+      //order: [[ 0, "asc" ]],
+    });
+
   });
   </script>
   <script src="{{ asset('user_accueil_script.js') }}" type="text/javascript"></script>
