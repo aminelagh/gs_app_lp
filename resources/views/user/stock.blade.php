@@ -31,7 +31,7 @@
           <p>Total nombre de ventes</p>
         </div>
         <div class="icon"><i class="ion ion-ios-cart-outline"></i></div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="{{ route('ventes') }}" class="small-box-footer">Historique des ventes <i class="fa fa-arrow-circle-right"></i></a>
       </div>
 
     </div>
@@ -144,7 +144,7 @@
                           <td>{{ $item->quantite!=null ? $item->quantite : "0" }} {{ $item->libelle_unite }}</td>
                           <td align="center">
                             <input class="form-control input-sm" maxlength="4" size="2" type="number" min="0" pattern="#.##"
-                            name="quantite[{{ $item->id_article }}]" id="quantite_{{ $item->id_article }}">
+                            name="quantite[{{ $item->id_article }}]">
                           </td>
                         </tr>
                       @endforeach
@@ -195,7 +195,7 @@
                           <td>{{ $item->quantite!=null ? $item->quantite : "0" }} {{ $item->libelle_unite }}</td>
                           <td align="center">
                             <input class="form-control input-sm" maxlength="4" size="2" type="number" min="0" max="{{ $item->quantite }}" pattern="#.##"
-                            name="quantite[{{ $item->id_article }}]" id="quantite_{{ $item->id_article }}">
+                            name="quantite[{{ $item->id_article }}]">
                           </td>
                         </tr>
                       @endforeach
@@ -214,7 +214,28 @@
         </div>
       </form>
     </div>
+    <script>
+    function calculateTotal(index, last){
+      let total = 0;
+      let q = 0;
+      let p = 0;
 
+      if(document.getElementById('quantite_'+index) == null) q = 0;
+      else q = document.getElementById('quantite_'+index).value;
+
+      if(document.getElementById('prix_'+index) == null) p = 0;
+      else p = document.getElementById('prix_'+index).value;
+
+      document.getElementById('totalLigne_'+index).value = p*q;
+
+      for(let i=1;i<=last;i++){
+        if(document.getElementById('totalLigne_'+i) == null) totalLigne = 0;
+        else totalLigne = document.getElementById('totalLigne_'+i).value * 1;
+        total += totalLigne;
+      }
+      document.getElementById('total').value = total;
+    }
+    </script>
 
     {{-- *****************************    add Vente   ********************************************** --}}
     <div class="modal fade" id="modalAddVente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -233,173 +254,212 @@
                 <div class="col-lg-12">
 
                   <table id="addVenteTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                    <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité actuelle</th><th>Quantité</th></tr></thead>
-                    <tbody>
-                      @foreach($stocks as $item)
-                        <tr align="center">
-                          <input type="hidden" name="id_article[{{ $item->id_article }}]" value="{{ $item->id_article }}">
+                    <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité actuelle</th><th>Quantité</th><th>Prix unitaire</th>
+                      <th>Prix unitaire</th></tr></thead>
+                      <tbody>
+                        @foreach($stocks as $item)
+                          <tr align="center">
+                            <input type="hidden" name="id_article[{{ $loop->iteration }}]" value="{{ $item->id_article }}">
 
-                          <td>{{ $item->id_article }}</td>
-                          <td>{{ $item->code }}</td>
-                          <td>{{ $item->designation }}</td>
-                          <td><a href="{{ route('categorie',[$item->id_categorie]) }}" target="_blank">{{ $item->libelle_categorie }}</a></td>
-                          <td>{{ $item->quantite!=null ? $item->quantite : "0" }} {{ $item->libelle_unite }}</td>
-                          <td align="center">
-                            <input class="form-control input-sm" maxlength="4" size="2" type="number" min="0" pattern="#.##"
-                            max="{{ $item->quantite }}" name="quantite[{{ $item->id_article }}]">
-                          </td>
-                        </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
+                            <td>{{ $item->id_article }}</td><td>{{ $item->code }}</td><td>{{ $item->designation }}</td><td>{{ $item->libelle_categorie }}</td>
+                            <td>{{ $item->quantite!=null ? $item->quantite : "0" }} {{ $item->libelle_unite }}</td>
+                            <td align="center">
+                              <input class="form-control input-sm" maxlength="4" size="2" type="number" min="0" pattern="#.##"
+                              id="quantite_{{ $loop->iteration }}" max="{{ $item->quantite }}" name="quantite[{{ $loop->iteration }}]"
+                              onkeyup="calculateTotal({{ $loop->iteration }}, {{ $stocks->count() }});"
+                              onkeydown="calculateTotal({{ $loop->iteration }}, {{ $stocks->count() }});"
+                              onclick="calculateTotal({{ $loop->iteration }}, {{ $stocks->count() }});">
+                            </td>
+                            <td align="center">
+                              <input class="form-control input-sm" maxlength="4" size="2" type="number" min="0" pattern="#.##"
+                              id="prix_{{ $loop->iteration }}" name="prix[{{ $loop->iteration }}]"
+                              onkeyup="calculateTotal({{ $loop->iteration }}, {{ $stocks->count() }});"
+                              onkeydown="calculateTotal({{ $loop->iteration }}, {{ $stocks->count() }});"
+                              onclick="calculateTotal({{ $loop->iteration }}, {{ $stocks->count() }});">
+                            </td>
+                            <td align="center">
+                              <input class="form-control input-sm" maxlength="4" size="2" type="number" min="0" pattern="#.##"
+                              id="totalLigne_{{ $loop->iteration }}" readonly>
+                            </td>
+                          </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+
+                  </div>
+                </div>
+
+                <div class="row">
+
+                  <div class="col-md-2">
+                    {{-- Total --}}
+                    <div class="form-group has-feedback">
+                      <label>Total</label>
+                      <input type="text" class="form-control" id="total" readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    {{-- client --}}
+                    <div class="form-group has-feedback">
+                      <label>Client</label>
+                      <input type="text" class="form-control" placeholder="Client" name="client" value="{{ old('client') }}">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    {{-- description --}}
+                    <div class="form-group has-feedback">
+                      <label>Description</label>
+                      <input type="text" class="form-control" placeholder="Description" name="description" value="{{ old('description') }}">
+                    </div>
+                  </div>
 
                 </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-success" value="Valider" name="submitValidate" form="formAddVente">
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <input type="submit" class="btn btn-success" value="Valider" name="submitValidate" form="formAddVente">
-            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
+
     </div>
+    {{-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ --}}
 
-  </div>
-  {{-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ --}}
+  @endsection
 
-@endsection
+  @section('scripts')
+    <script>
 
-@section('scripts')
-  <script>
+    $(document).ready(function () {
 
-  $(document).ready(function () {
-
-    //stock table  **********************************************************************
-    $('#stocksTable').DataTable({
-      dom: '<lf<Bt>ip>',
-      lengthMenu: [
-        [ 10, 25, 50, -1 ],
-        [ '10', '25', '50', 'Tout' ]
-      ],
-      searching: true,
-      paging: true,
-      //"autoWidth": true,
-      info: false,
-      stateSave: false,
-      columnDefs: [
-        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
-        { targets: 01, type: "string", visible: true, searchable: true, orderable: true},
-        //  { targets: 11, width: "", type: "string", visible: false, searchable: true, orderable: false},  //le
-      ],
-    });
-    //************************************************************************************
-    //add Stoc IN ************************************************************************
-    var tableIN = $('#addStockINTable').DataTable({
-      dom: '<lf<Bt>ip>',
-      lengthMenu: [
-        [ 10, 25, 50, -1 ],
-        [ '10', '25', '50', 'Tout' ]
-      ],
-      searching: true,
-      paging: true,
-      //"autoWidth": true,
-      info: false,
-      stateSave: false,
-      columnDefs: [
-        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
-        { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
-      ]
-    });
-
-    $('#formAddSockIN').on('submit', function(e){
-      var form = this;
-      // Encode a set of form elements from all pages as an array of names and values
-      var params = tableIN.$('input,select,text,checkbox, number').serializeArray();
-      // Iterate over all form elements
-      $.each(params, function(){
-        // If element doesn't exist in DOM
-        if(!$.contains(document, form[this.name])){
-          // Create a hidden element
-          $(form).append(
-            $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
-          );
-        }
+      //stock table  **********************************************************************
+      $('#stocksTable').DataTable({
+        dom: '<lf<Bt>ip>',
+        lengthMenu: [
+          [ 10, 25, 50, -1 ],
+          [ '10', '25', '50', 'Tout' ]
+        ],
+        searching: true,
+        paging: true,
+        //"autoWidth": true,
+        info: false,
+        stateSave: false,
+        columnDefs: [
+          { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+          { targets: 01, type: "string", visible: true, searchable: true, orderable: true},
+          //  { targets: 11, width: "", type: "string", visible: false, searchable: true, orderable: false},  //le
+        ],
       });
-    });
-    //*************************************************************************************
-    //add stock out ***********************************************************************
-    var tableOUT = $('#addStockOUTTable').DataTable({
-      dom: '<lf<Bt>ip>',
-      lengthMenu: [
-        [ 10, 25, 50, -1 ],
-        [ '10', '25', '50', 'Tout' ]
-      ],
-      searching: true,
-      paging: true,
-      //"autoWidth": true,
-      info: false,
-      stateSave: false,
-      columnDefs: [
-        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
-        { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
-      ]
-    });
-
-    // Handle form submission event (enable the entire table to be submitted)
-    $('#formAddSockOUT').on('submit', function(e){
-      var form = this;
-      // Encode a set of form elements from all pages as an array of names and values
-      var params = tableOUT.$('input,select,text,checkbox, number').serializeArray();
-      // Iterate over all form elements
-      $.each(params, function(){
-        // If element doesn't exist in DOM
-        if(!$.contains(document, form[this.name])){
-          // Create a hidden element
-          $(form).append(
-            $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
-          );
-        }
+      //************************************************************************************
+      //add Stoc IN ************************************************************************
+      var tableIN = $('#addStockINTable').DataTable({
+        dom: '<lf<Bt>ip>',
+        lengthMenu: [
+          [ 10, 25, 50, -1 ],
+          [ '10', '25', '50', 'Tout' ]
+        ],
+        searching: true,
+        paging: true,
+        //"autoWidth": true,
+        info: false,
+        stateSave: false,
+        columnDefs: [
+          { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+          { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
+        ]
       });
-    });
-    //*************************************************************************************
-    //add stock vente *********************************************************************
-    var tableVente = $('#addVenteTable').DataTable({
-      dom: '<lf<Bt>ip>',
-      lengthMenu: [
-        [ 10, 25, 50, -1 ],
-        [ '10', '25', '50', 'Tout' ]
-      ],
-      searching: true,
-      paging: true,
-      //"autoWidth": true,
-      info: false,
-      stateSave: false,
-      columnDefs: [
-        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
-        { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
-      ]
-    });
 
-    // Handle form submission event (enable the entire table to be submitted)
-    $('#formAddVente').on('submit', function(e){
-      var form = this;
-      // Encode a set of form elements from all pages as an array of names and values
-      var params = tableVente.$('input,select,text,checkbox, number').serializeArray();
-      // Iterate over all form elements
-      $.each(params, function(){
-        // If element doesn't exist in DOM
-        if(!$.contains(document, form[this.name])){
-          // Create a hidden element
-          $(form).append(
-            $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
-          );
-        }
+      $('#formAddSockIN').on('submit', function(e){
+        var form = this;
+        // Encode a set of form elements from all pages as an array of names and values
+        var params = tableIN.$('input,select,text,checkbox, number').serializeArray();
+        // Iterate over all form elements
+        $.each(params, function(){
+          // If element doesn't exist in DOM
+          if(!$.contains(document, form[this.name])){
+            // Create a hidden element
+            $(form).append(
+              $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
+            );
+          }
+        });
       });
-    });
-    //***************************************************************************************
+      //*************************************************************************************
+      //add stock out ***********************************************************************
+      var tableOUT = $('#addStockOUTTable').DataTable({
+        dom: '<lf<Bt>ip>',
+        lengthMenu: [
+          [ 10, 25, 50, -1 ],
+          [ '10', '25', '50', 'Tout' ]
+        ],
+        searching: true,
+        paging: true,
+        //"autoWidth": true,
+        info: false,
+        stateSave: false,
+        columnDefs: [
+          { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+          { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
+        ]
+      });
 
-  });
-</script>
-<script src="{{ asset('user_stock_script.js') }}" type="text/javascript"></script>
-@endsection
+      // Handle form submission event (enable the entire table to be submitted)
+      $('#formAddSockOUT').on('submit', function(e){
+        var form = this;
+        // Encode a set of form elements from all pages as an array of names and values
+        var params = tableOUT.$('input,select,text,checkbox, number').serializeArray();
+        // Iterate over all form elements
+        $.each(params, function(){
+          // If element doesn't exist in DOM
+          if(!$.contains(document, form[this.name])){
+            // Create a hidden element
+            $(form).append(
+              $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
+            );
+          }
+        });
+      });
+      //*************************************************************************************
+      //add stock vente *********************************************************************
+      var tableVente = $('#addVenteTable').DataTable({
+        dom: '<lf<Bt>ip>',
+        lengthMenu: [
+          [ 10, 25, 50, -1 ],
+          [ '10', '25', '50', 'Tout' ]
+        ],
+        searching: true,
+        paging: true,
+        //"autoWidth": true,
+        info: false,
+        stateSave: false,
+        columnDefs: [
+          { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+          //{ targets: 01, type: "string", visible: true, searchable: true, orderable: true}
+        ]
+      });
+
+      // Handle form submission event (enable the entire table to be submitted)
+      $('#formAddVente').on('submit', function(e){
+        var form = this;
+        // Encode a set of form elements from all pages as an array of names and values
+        var params = tableVente.$('input,select,text,checkbox, number').serializeArray();
+        // Iterate over all form elements
+        $.each(params, function(){
+          // If element doesn't exist in DOM
+          if(!$.contains(document, form[this.name])){
+            // Create a hidden element
+            $(form).append(
+              $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
+            );
+          }
+        });
+      });
+      //***************************************************************************************
+
+    });
+
+    </script>
+  @endsection

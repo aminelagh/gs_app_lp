@@ -1,7 +1,7 @@
 @extends('user.layouts.layout')
 
 @section('contentHeader')
-  <h1>Détail de l'entrée de stock: <b>{{ formatDateTime($transaction->created_at) }}</b><small></small>
+  <h1>Détail de la sortie de stock: <b>{{ formatDateTime($transaction->created_at) }}</b><small></small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>

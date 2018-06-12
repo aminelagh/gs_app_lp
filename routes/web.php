@@ -43,6 +43,9 @@ Route::group(['middleware' => 'user'], function () {
   Route::get('/stockOUTs', 'StockController@stockOUTs')->name('stockOUTs');
   Route::get('/stockOUT/{id_transaction}', 'StockController@stockOUT')->name('stockOUT');
 
+  Route::get('/ventes', 'StockController@ventes')->name('ventes');
+  Route::get('/vente/{id_transaction}', 'StockController@vente')->name('vente');
+
   Route::get('/categorie/{id_categorie}','UserController@categorie')->name('categorie');
   Route::post('/addCategorie', 'UserController@addCategorie')->name('addCategorie');
   Route::post('/updateCategorie', 'UserController@updateCategorie')->name('updateCategorie');

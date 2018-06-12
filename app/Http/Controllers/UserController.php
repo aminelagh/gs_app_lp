@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Closure;
 use \Exception;
 use Session;
@@ -14,9 +13,8 @@ use \App\Models\Article;
 use \DB;
 use App\Models\Stock;
 
+class UserController extends Controller{
 
-class UserController extends Controller
-{
   public function accueil(Request $request){
     $categories = Categorie::all();
     $stocksNumber = Stock::all()->count();
@@ -40,7 +38,6 @@ class UserController extends Controller
     }
     return redirect()->back()->with('alert_success',"Element créé");
   }
-
   public function updateCategorie(Request $request){
     try{
       $item = Categorie::find($request->id_categorie);
@@ -51,11 +48,15 @@ class UserController extends Controller
     }
     return redirect()->back()->with('alert_success',"Element Modifiée");
   }
-
   public function deleteCategorie(Request $request){
     try{
-      $item = Categorie::find($request->id_categorie);
-      $item->delete();
+      if(Article::where('id_categorie',$request->id_categorie)->get()->first() != null){
+        return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
+      }
+      else{
+        $item = Categorie::find($request->id_categorie);
+        $item->delete();
+      }
     }catch(Exception $e){
       return redirect()->back()->with('alert_danger',"Erreur de suppression de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
     }
@@ -79,7 +80,6 @@ class UserController extends Controller
     }
     return redirect()->back()->with('alert_success',"Elément créé");
   }
-
   public function updateArticle(Request $request){
     try{
       $item = Article::find($request->id_article);
@@ -94,11 +94,15 @@ class UserController extends Controller
     }
     return redirect()->back()->with('alert_success',"Element Modifiée");
   }
-
   public function deleteArticle(Request $request){
     try{
-      $item = Article::find($request->id_article);
-      $item->delete();
+      if(Stock::where('id_article',$request->id_article)->get()->first() != null){
+        return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
+      }
+      else{
+        $item = Article::find($request->id_article);
+        $item->delete();
+      }
     }catch(Exception $e){
       return redirect()->back()->with('alert_danger',"Erreur de suppression de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
     }

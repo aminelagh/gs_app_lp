@@ -9,6 +9,7 @@ use \App\Models\Stock;
 use \App\Models\Transaction;
 use \App\Models\Transaction_article;
 use \App\Models\Unite;
+use \App\Models\Detail;
 use \DB;
 use \Exception;
 
@@ -60,7 +61,7 @@ class StockController extends Controller{
         $transaction = new Transaction();
         $transaction->id_transaction = $id_transaction;
         $transaction->id_type_transaction = 1;
-        $transaction->id_detail = 1;
+        $transaction->id_detail = null;
         $transaction->save();
 
         //dump($transaction);
@@ -126,7 +127,7 @@ class StockController extends Controller{
         $transaction = new Transaction();
         $transaction->id_transaction = $id_transaction;
         $transaction->id_type_transaction = 2; //stock out id_type_transaction
-        $transaction->id_detail = 1;
+        $transaction->id_detail = null;
         $transaction->save();
 
         //dump($transaction);
@@ -182,14 +183,22 @@ class StockController extends Controller{
           $hasData = true;
         }
       }
+
       if ($hasData) {
         //create new Transaction
         $id_transaction = Transaction::getNextID();
+        $id_detail = Detail::getNextID();
         $transaction = new Transaction();
         $transaction->id_transaction = $id_transaction;
-        $transaction->id_type_transaction = 3; //stock out id_type_transaction
-        $transaction->id_detail = 1;
+        $transaction->id_type_transaction = 3; //vente id_type_transaction
+        $transaction->id_detail = $id_detail;
         $transaction->save();
+
+        $detail = new Detail();
+        $detail->id_detail = $id_detail;
+        $detail->client = $request->client;
+        $detail->description = $request->description;
+        $detail->save();
 
         foreach ($id_articles as $index => $id_article) {
           if ($quantites[$index] != null && $quantites[$index] > 0 && $prix[$index] != null && $prix[$index] > 0) {
@@ -201,7 +210,7 @@ class StockController extends Controller{
             $transaction_article->id_transaction = $id_transaction;
             $transaction_article->id_article = intval($id_article);
             $transaction_article->quantite = $quantites[$index];
-            $transaction_article->prix = 0;
+            $transaction_article->prix = $prix[$index];
             $transaction_article->save();
 
             if ($stock != null) {
@@ -226,6 +235,7 @@ class StockController extends Controller{
   }
 
 
+  //Stock in *******************************************************************
   public function stockINs(Request $request){
     $title = "Historique des entrées de stock";
     $unites = Unite::all();
@@ -267,4 +277,87 @@ class StockController extends Controller{
     return view('user.stockIN')->with(compact('articles','transaction', 'title','transaction_articles'));
   }
 
+  //Stock out ******************************************************************
+  public function stockOUTs(Request $request){
+    $title = "Historique des sorties de stock";
+    $unites = Unite::all();
+    $stockOUTs = collect(DB::select(
+      "SELECT t.id_transaction, t.id_detail, t.created_at,
+      count(ta.id_transaction_article) as nombre_articles
+      FROM transactions t
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      WHERE t.id_type_transaction=2
+      GROUP BY t.id_transaction, t.id_detail, t.created_at;"
+    ));
+    //foreach ($stockINs as $item) dump($item);
+    return view('user.stockOUTs')->with(compact('articles', 'unites', 'stockOUTs', 'title'));
+  }
+
+  public function stockOUT($id_transaction, Request $request){
+    $stockIN = Transaction::find($id_transaction);
+    if($stockIN==null){
+      return redirect()->back()->with('alert_warning',"Impossible de trouver cet élément.");
+    }
+    else if($stockIN->id_type_transaction!=2){
+      return redirect()->route("error");
+      return redirect()->back()->with('alert_warning',"");
+    }
+    $title = "Sorties de stock: $stockIN->created_at";
+    $transaction_articles = collect(DB::select(
+      "SELECT ta.*, a.code,a.designation,a.description,
+      c.libelle as libelle_categorie,c.id_categorie, u.libelle as libelle_unite
+      FROM transaction_articles ta
+      LEFT JOIN articles a ON a.id_article=ta.id_article
+      LEFT JOIN categories c ON c.id_categorie=a.id_categorie
+      LEFT JOIN unites u ON u.id_unite=a.id_unite
+      WHERE ta.id_transaction=$id_transaction;"
+    ));
+    $transaction = Transaction::find($id_transaction);
+
+    //foreach ($transaction_articles as $item) dump($item);
+
+    return view('user.stockOUT')->with(compact('articles','transaction', 'title','transaction_articles'));
+  }
+
+  //Stock vente ****************************************************************
+  public function ventes(Request $request){
+    $title = "Historique des ventes";
+    $unites = Unite::all();
+    $ventes = collect(DB::select(
+      "SELECT t.id_transaction, t.id_detail, t.created_at,
+      count(ta.id_transaction_article) as nombre_articles
+      FROM transactions t
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      WHERE t.id_type_transaction=3
+      GROUP BY t.id_transaction, t.id_detail, t.created_at;"
+    ));
+    //foreach ($stockINs as $item) dump($item);
+    return view('user.ventes')->with(compact('articles', 'unites', 'ventes', 'title'));
+  }
+
+  public function vente($id_transaction, Request $request){
+    $stockIN = Transaction::find($id_transaction);
+    if($stockIN==null){
+      return redirect()->back()->with('alert_warning',"Impossible de trouver cet élément.");
+    }
+    else if($stockIN->id_type_transaction!=3){
+      return redirect()->route("error");
+      return redirect()->back()->with('alert_warning',"");
+    }
+    $title = "Ventes: $stockIN->created_at";
+    $transaction_articles = collect(DB::select(
+      "SELECT ta.*, a.code,a.designation,a.description,
+      c.libelle as libelle_categorie,c.id_categorie, u.libelle as libelle_unite
+      FROM transaction_articles ta
+      LEFT JOIN articles a ON a.id_article=ta.id_article
+      LEFT JOIN categories c ON c.id_categorie=a.id_categorie
+      LEFT JOIN unites u ON u.id_unite=a.id_unite
+      WHERE ta.id_transaction=$id_transaction;"
+    ));
+    $transaction = Transaction::find($id_transaction);
+
+    //foreach ($transaction_articles as $item) dump($item);
+
+    return view('user.vente')->with(compact('articles','transaction', 'title','transaction_articles'));
+  }
 }
