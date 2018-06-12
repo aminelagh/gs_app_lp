@@ -29,13 +29,13 @@
     <div class="col-lg-3 col-xs-6">
       <div class="small-box bg-green">
         <div class="inner">
-          <h3>53<sup style="font-size: 20px">%</sup></h3>
-          <p>Bounce Rate</p>
+          <h3>{{ $stocksNumber }}<!--sup style="font-size: 20px">%</sup--></h3>
+          <p>Articles dans le stock</p>
         </div>
         <div class="icon">
           <i class="ion ion-stats-bars"></i>
         </div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="{{ route('stock') }}" class="small-box-footer">Plus de détail <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 
@@ -43,12 +43,12 @@
       <div class="small-box bg-yellow">
         <div class="inner">
           <h3>44</h3>
-          <p>User Registrations</p>
+          <p>Nombre des entrées de stock</p>
         </div>
         <div class="icon">
           <i class="ion ion-person-add"></i>
         </div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        <a href="{{ route('stockINs') }}" class="small-box-footer">Historique des entrées de stocks<i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 

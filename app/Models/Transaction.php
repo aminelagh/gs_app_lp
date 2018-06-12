@@ -16,7 +16,7 @@ class Transaction extends Model{
 
   public static function getNextID(){
     $lastRecord = DB::table('transactions')->orderBy('id_transaction', 'desc')->first();
-    $result = ($lastRecord == null ? 1 : $lastRecord->id_article + 1);
+    $result = ($lastRecord == null ? 1 : $lastRecord->id_transaction + 1);
     return $result;
   }
 

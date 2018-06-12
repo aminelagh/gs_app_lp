@@ -34,6 +34,14 @@ Route::group(['middleware' => 'user'], function () {
 
   Route::get('/stock', 'StockController@stock')->name('stock');
   Route::post('/addStockIN','StockController@addStockIN')->name('addStockIN');
+  Route::post('/addStockOUT','StockController@addStockOUT')->name('addStockOUT');
+  Route::post('/addVente','StockController@addVente')->name('addVente');
+
+  Route::get('/stockINs', 'StockController@stockINs')->name('stockINs');
+  Route::get('/stockIN/{id_transaction}', 'StockController@stockIN')->name('stockIN');
+
+  Route::get('/stockOUTs', 'StockController@stockOUTs')->name('stockOUTs');
+  Route::get('/stockOUT/{id_transaction}', 'StockController@stockOUT')->name('stockOUT');
 
   Route::get('/categorie/{id_categorie}','UserController@categorie')->name('categorie');
   Route::post('/addCategorie', 'UserController@addCategorie')->name('addCategorie');
@@ -47,6 +55,10 @@ Route::group(['middleware' => 'user'], function () {
 
 });
 
+
+Route::get('/error',function(){
+  return "<h1>ErrorPageHere</h1>";
+})->name('error');
 
 //Authentification
 //login

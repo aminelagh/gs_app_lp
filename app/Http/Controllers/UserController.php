@@ -12,19 +12,21 @@ use \App\Models\Unite;
 use \App\Models\Categorie;
 use \App\Models\Article;
 use \DB;
+use App\Models\Stock;
 
 
 class UserController extends Controller
 {
   public function accueil(Request $request){
     $categories = Categorie::all();
+    $stocksNumber = Stock::all()->count();
     $articles = collect(DB::select(
       "SELECT c.libelle as libelle_categorie, a.*
       FROM articles a
       LEFT JOIN categories c ON c.id_categorie=a.id_categorie;"
     ));
     $unites = Unite::all();
-    return view('user.accueil')->with(compact('articles','categories','unites'));
+    return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber'));
   }
 
   //CRUD Categorie @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
