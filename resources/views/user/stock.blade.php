@@ -4,8 +4,8 @@
   <h1>Gestion de stock<small></small>
   </h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-home"></i> Accueil</a></li>
-    <li class="active"></li>
+    <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
+    <li class="active">Stock</li>
   </ol>
 @endsection
 
@@ -14,7 +14,7 @@
   <div class="row">
 
     <div class="col-md-4 col-md-offset-1">
-      <div class="small-box bg-aqua">
+      <div class="small-box bg-blue">
         <div class="inner">
           <h3>{{ $stockINsCount }}</h3>
           <p>Total nombre d'entrées de stock</p>
@@ -25,7 +25,7 @@
     </div>
 
     <div class="col-md-2">
-      <div class="small-box bg-green">
+      <div class="small-box bg-yellow">
         <div class="inner">
           <h3>{{ $ventesCount }}</h3>
           <p>Total nombre de ventes</p>
@@ -59,13 +59,11 @@
 
   <div class="row" align="center">
 
-
     <button class="btn btn-app" data-toggle="modal" href="#modalAddStockIN" title="Nouvelle entrée de stock"><i class="fa fa-plus"></i></button>
 
-    <button class="btn btn-app" data-toggle="modal" href="#modalAddVente" title="Nouvelle vente"><i class="glyphicon glyphicon-shopping-cart"></i> Vente</button>
+    <button class="btn btn-app" data-toggle="modal" href="#modalAddVente" title="Nouvelle vente"><i class="glyphicon glyphicon-shopping-cart"></i></button>
 
     <button class="btn btn-app" data-toggle="modal" href="#modalAddStockOUT" title="Nouvelle sortie de stock"><i class="fa fa-minus"></i></button>
-
 
   </div>
 

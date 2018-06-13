@@ -1,11 +1,9 @@
 @extends('user.layouts.layout')
 
 @section('contentHeader')
-  <h1>Gestion de stock<small></small>
-  </h1>
+  <h1>Gestion de stock<small></small></h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-home"></i> Accueil</a></li>
-    <li class="active"></li>
+    <li class="active"><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
   </ol>
 @endsection
 

@@ -60,7 +60,7 @@ Route::group(['middleware' => 'user'], function () {
 
 
 Route::get('/error',function(){
-  return "<h1>ErrorPageHere</h1>";
+  return view('user.error');
 })->name('error');
 
 //Authentification

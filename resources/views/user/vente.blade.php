@@ -1,7 +1,7 @@
 @extends('user.layouts.layout')
 
 @section('contentHeader')
-  <h1>Détail de l'entrée de stock: <b>{{ formatDateTime($transaction->created_at) }}</b><small></small>
+  <h1>Détail de le vente: <b>{{ formatDateTime($transaction->created_at) }}</b><small></small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
@@ -14,24 +14,36 @@
   <div class="row">
 
     <div class="col-md-12">
-      {{-- *********************************** Stocks ************************************* --}}
+      {{-- *********************************** vente details ************************************* --}}
       <div class="box">
         <div class="box-body">
           <div class="row">
             <div class=" col-md-12">
-              <table id="StockINsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité</th><th>Quantité Actuelle</th></tr></thead>
+              <table id="venteDetailsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité</th><th>Prix unitaire</th><th>PU x Quantité</th></tr></thead>
                 <tbody>
+                  @php
+                  $total = 0;
+                  @endphp
                   @foreach($transaction_articles as $item)
                     <tr align="center">
-                      <td>{{ $item->id_transaction_article }}</td>
+                      <td>{{ $loop->iteration }}</td>
                       <td>{{ $item->code }}</td>
                       <td>{{ $item->designation }}</td>
-                      <td><a href="{{ route('categorie',[$item->id_categorie]) }}">{{ $item->libelle_categorie }}</a></td>
+                      <td>{{ $item->libelle_categorie }}</td>
                       <td>{{ $item->quantite }} {{ $item->libelle_unite }}</td>
-                      <td></td>
+                      <td>{{ $item->prix }} Dhs</td>
+                      <td>{{ $item->prix * $item->quantite }} Dhs</td>
                     </tr>
+                    @php
+                    $total += $item->prix * $item->quantite;
+                    @endphp
                   @endforeach
+                  <tfoot><tr  align="center">
+                    <th></th>
+                    <th colspan="5">Total</th>
+                    <th>{{ $total }} Dhs</th>
+                  </tr></tfoot>
                 </tbody>
               </table>
             </div>
@@ -39,7 +51,7 @@
         </div>
         <div class="box-footer"></div>
       </div>
-      {{-- *********************************** Stocks ************************************* --}}
+      {{-- *********************************** vente details ************************************* --}}
     </div>
 
   </div>
@@ -53,7 +65,7 @@
 
   $(document).ready(function () {
 
-    var table = $('#StockINsTable').DataTable({
+    var table = $('#venteDetailsTable').DataTable({
       dom: '<lf<Bt>ip>',
       lengthMenu: [
         [ 10, 25, 50, -1 ],
@@ -70,8 +82,6 @@
         //  { targets: 11, width: "", type: "string", visible: false, searchable: true, orderable: false},  //le
       ],
     });
-
-
 
   });
   </script>
