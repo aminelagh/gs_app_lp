@@ -5,8 +5,12 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
-    <li class="active"></li>
+    <li><a href="{{ route('stock') }}"><i class="fa fa-cubes"></i> Stock</a></li>
+    <li><a href="{{ route('stockINs') }}"><i class="fa fa-history"></i> Historique</a></li>
+    <li class="active">Détails de: <b>{{ formatDateTime($transaction->created_at) }}</b></li>
   </ol>
+
+
 @endsection
 
 @section('content')
@@ -20,16 +24,15 @@
           <div class="row">
             <div class=" col-md-12">
               <table id="StockINsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité</th><th>Quantité Actuelle</th></tr></thead>
+                <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité</th></tr></thead>
                 <tbody>
                   @foreach($transaction_articles as $item)
                     <tr align="center">
-                      <td>{{ $item->id_transaction_article }}</td>
+                      <td>{{ $loop->iteration }}</td>
                       <td>{{ $item->code }}</td>
                       <td>{{ $item->designation }}</td>
                       <td><a href="{{ route('categorie',[$item->id_categorie]) }}">{{ $item->libelle_categorie }}</a></td>
                       <td>{{ $item->quantite }} {{ $item->libelle_unite }}</td>
-                      <td></td>
                     </tr>
                   @endforeach
                 </tbody>
@@ -62,7 +65,7 @@
       searching: true,
       paging: true,
       //"autoWidth": true,
-      info: false,
+      info: true,
       stateSave: false,
       columnDefs: [
         { targets: 00, type: "num", visible: false, searchable: false, orderable: true},  //article

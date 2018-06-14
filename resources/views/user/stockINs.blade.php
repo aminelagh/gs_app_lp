@@ -1,11 +1,12 @@
 @extends('user.layouts.layout')
 
 @section('contentHeader')
-  <h1>Gestion de stock<small></small>
+  <h1>Historique des enrées de stock<small></small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
-    <li class="active"></li>
+    <li><a href="{{ route('stock') }}"><i class="fa fa-cubes"></i> Stock</a></li>
+    <li class="active"><i class="fa fa-history"></i> Historique des entrées de stock</li>
   </ol>
 @endsection
 
@@ -13,68 +14,22 @@
 
   <div class="row">
 
-    <div class="col-md-4 col-md-offset-1">
-      <div class="small-box bg-aqua">
-        <div class="inner">
-          <h3>{{ 22 }}</h3>
-          <p>Total nombre d entrées de stock</p>
-        </div>
-        <div class="icon"><i class="ion ion-bag"></i></div>
-        <a data-toggle="modal" href="#modalAddArticle" class="small-box-footer">Nouvelle entrée de stock <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="small-box bg-green">
-        <div class="inner">
-          <h3>53<sup style="font-size: 20px">%</sup></h3>
-          <p>Bounce Rate</p>
-        </div>
-        <div class="icon"><i class="ion ion-stats-bars"></i></div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-
-    </div>
-
-    <div class="col-md-4">
-      <div class="small-box bg-red">
-        <div class="inner">
-          <h3>53<sup style="font-size: 20px">%</sup></h3>
-          <p>Bounce Rate</p>
-        </div>
-        <div class="icon"><i class="ion ion-stats-bars"></i></div>
-        <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-      </div>
-    </div>
-
-  </div>
-
-
-  <div class="row">
-
     <div class="col-md-12">
       {{-- *********************************** Stocks ************************************* --}}
       <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Historique des entrées de stock</h3>
-          <div class="box-tools pull-right">
-            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-          </div>
-        </div>
         <div class="box-body">
           <div class="row">
             <div class=" col-md-12">
-              <table id="StockINsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+              <table id="dataTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                 <thead><tr><th> # </th><th>Date</th><th>Nombre d'article</th><th>Outils</th></tr></thead>
                 <tbody>
                   @foreach($stockINs as $item)
                     <tr align="center" ondblclick="window.location.href='{{ route("stockIN", $item->id_transaction) }}'" title="Double click pour plus de détails" >
-                      <td>{{ $item->id_transaction }}</td>
+                      <td>{{ $loop->iteration }}</td>
                       <td>{{ formatDateTime($item->created_at) }}</td>
                       <td>{{ $item->nombre_articles }}</td>
                       <td>
-                        <i class="fa fa-edit"></i>
+                        <a href="{{ route("stockIN", $item->id_transaction) }}"><i class="fa fa-info"></i></a>
                       </td>
                     </tr>
                   @endforeach
@@ -99,7 +54,7 @@
 
   $(document).ready(function () {
 
-    var table = $('#StockINsTable').DataTable({
+    var table = $('#dataTable').DataTable({
       dom: '<lf<Bt>ip>',
       lengthMenu: [
         [ 10, 25, 50, -1 ],
@@ -108,7 +63,7 @@
       searching: true,
       paging: true,
       //"autoWidth": true,
-      info: false,
+      info: true,
       stateSave: false,
       columnDefs: [
         { targets: 00, type: "num", visible: false, searchable: false, orderable: true},  //article

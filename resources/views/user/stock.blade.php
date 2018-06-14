@@ -5,7 +5,7 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
-    <li class="active">Stock</li>
+    <li class="active"><a href="{{ route('stock') }}"><i class="fa fa-cubes"></i> Stock</a></li>
   </ol>
 @endsection
 
@@ -73,11 +73,6 @@
     <div class="col-md-12">
       {{-- *********************************** Stocks ************************************* --}}
       <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Stock</h3>
-          <div class="box-tools pull-right">
-          </div>
-        </div>
         <div class="box-body">
           <div class="row">
             <div class=" col-md-12">

@@ -5,7 +5,8 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
-    <li class="active">Historique des ventes</li>
+    <li><a href="{{ route('stock') }}"><i class="fa fa-cubes"></i> Stock</a></li>
+    <li class="active"><i class="fa fa-history"></i> Historique des ventes</li>
   </ol>
 @endsection
 

@@ -20,7 +20,7 @@
         <div class="icon">
           <i class="ion ion-bag"></i>
         </div>
-        <a href="#" class="small-box-footer">Plus de details <i class="fa fa-arrow-circle-right"></i></a>
+        <a data-toggle="modal" href="#modalAddArticle" class="small-box-footer">Ajouter article <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 
@@ -40,28 +40,31 @@
     <div class="col-lg-3 col-xs-6">
       <div class="small-box bg-yellow">
         <div class="inner">
-          <h3>44</h3>
-          <p>Nombre des entrées de stock</p>
+          <h3>{{ $total_ventes_mois != null ? $total_ventes_mois." Dhs" : 0 }}</h3>
+          <p>Total somme des ventes du dernier mois</p>
         </div>
         <div class="icon">
-          <i class="ion ion-person-add"></i>
+          <i class="ion ion-calendar"></i>
         </div>
-        <a href="{{ route('stockINs') }}" class="small-box-footer">Historique des entrées de stocks<i class="fa fa-arrow-circle-right"></i></a>
+        <a href="{{ route('ventes') }}" class="small-box-footer">Historique des ventes <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
 
     <div class="col-lg-3 col-xs-6">
       <div class="small-box bg-red">
         <div class="inner">
-          <h3>65</h3>
-          <p>Articles</p>
+          <h3>{{ $total_ventes != null ? $total_ventes." Dhs" : 0 }}</h3>
+          <p>Total somme des ventes</p>
         </div>
         <div class="icon">
-          <i class="ion ion-pie-graph"></i>
+          <i class="ion ion-cart"></i>
         </div>
         <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
       </div>
     </div>
+
+    </div>
+
 
   </div>
 
@@ -122,7 +125,7 @@
                 <tbody>
                   @foreach($articles as $item)
                     <tr align="center">
-                      <td>{{ $item->id_article }}</td>
+                      <td>{{ $loop->iteration }}</td>
                       <td>{{ $item->code }}</td>
                       <td>{{ $item->designation }}</td>
                       <td><a href="{{ route('categorie',[$item->id_categorie]) }}">{{ $item->libelle_categorie }}</a></td>

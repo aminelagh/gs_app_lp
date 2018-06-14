@@ -17,102 +17,113 @@ class UserController extends Controller{
 
   public function accueil(Request $request){
     $categories = Categorie::all();
-    $stocksNumber = Stock::all()->count();
-    $articles = collect(DB::select(
-      "SELECT c.libelle as libelle_categorie, a.*
-      FROM articles a
-      LEFT JOIN categories c ON c.id_categorie=a.id_categorie;"
-    ));
+    $articles = collect(DB::select("SELECT c.libelle as libelle_categorie, a.* FROM articles a LEFT JOIN categories c ON c.id_categorie=a.id_categorie;"));
     $unites = Unite::all();
-    return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber'));
-  }
+    $stocksNumber = collect(DB::select("SELECT count(*) as nombre FROM stocks s where quantite>0 ;"))->first()->nombre;
+    $total_ventes_mois = collect(DB::select(
+      "SELECT MONTH(t.created_at), sum(ta.prix*ta.quantite) as total
+      FROM transactions t
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      WHERE t.id_type_transaction=3
+      GROUP BY MONTH(t.created_at);"))->last()->total;
 
-  //CRUD Categorie @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  public function addCategorie(Request $request){
-    try{
-      $item = new Categorie();
-      $item->libelle = $request->libelle;
-      $item->save();
-    }catch(Exception $e){
-      return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
-    }
-    return redirect()->back()->with('alert_success',"Element créé");
-  }
-  public function updateCategorie(Request $request){
-    try{
-      $item = Categorie::find($request->id_categorie);
-      $item->libelle = $request->libelle;
-      $item->save();
-    }catch(Exception $e){
-      return redirect()->back()->withInput()->with('alert_danger',"Erreur de modification de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
-    }
-    return redirect()->back()->with('alert_success',"Element Modifiée");
-  }
-  public function deleteCategorie(Request $request){
-    try{
-      if(Article::where('id_categorie',$request->id_categorie)->get()->first() != null){
-        return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
+      //quantite * prix des ventes
+      $total_ventes = collect(DB::select(
+        "SELECT sum(ta.prix*ta.quantite) as total
+        FROM transactions t
+        LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+        WHERE t.id_type_transaction=3;"))->last()->total;
+        return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber','total_ventes','total_ventes_mois'));
       }
-      else{
-        $item = Categorie::find($request->id_categorie);
-        $item->delete();
+
+      //CRUD Categorie @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      public function addCategorie(Request $request){
+        try{
+          $item = new Categorie();
+          $item->libelle = $request->libelle;
+          $item->save();
+        }catch(Exception $e){
+          return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
+        }
+        return redirect()->back()->with('alert_success',"Element créé");
       }
-    }catch(Exception $e){
-      return redirect()->back()->with('alert_danger',"Erreur de suppression de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
-    }
-    return redirect()->back()->with('alert_success',"Element supprimée");
-  }
-  //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-  //CRUD Article @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  public function addArticle(Request $request){
-    try{
-      //dd($request->all());
-      $item = new Article();
-      $item->id_categorie = $request->id_categorie;
-      $item->id_unite = $request->id_unite;
-      $item->code = $request->code;
-      $item->designation = $request->designation;
-      $item->description = $request->description;
-      $item->save();
-    }catch(Exception $e){
-      return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
-    }
-    return redirect()->back()->with('alert_success',"Elément créé");
-  }
-  public function updateArticle(Request $request){
-    try{
-      $item = Article::find($request->id_article);
-      $item->id_categorie = $request->id_categorie;
-      $item->id_unite = $request->id_unite;
-      $item->code = $request->code;
-      $item->designation = $request->designation;
-      $item->description = $request->description;
-      $item->save();
-    }catch(Exception $e){
-      return redirect()->back()->withInput()->with('alert_danger',"Erreur de modification de l'élement.<br>Message d'erreur: ".$e->getMessage().".");
-    }
-    return redirect()->back()->with('alert_success',"Element Modifiée");
-  }
-  public function deleteArticle(Request $request){
-    try{
-      if(Stock::where('id_article',$request->id_article)->get()->first() != null){
-        return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
+      public function updateCategorie(Request $request){
+        try{
+          $item = Categorie::find($request->id_categorie);
+          $item->libelle = $request->libelle;
+          $item->save();
+        }catch(Exception $e){
+          return redirect()->back()->withInput()->with('alert_danger',"Erreur de modification de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
+        }
+        return redirect()->back()->with('alert_success',"Element Modifiée");
       }
-      else{
-        $item = Article::find($request->id_article);
-        $item->delete();
+      public function deleteCategorie(Request $request){
+        try{
+          if(Article::where('id_categorie',$request->id_categorie)->get()->first() != null){
+            return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
+          }
+          else{
+            $item = Categorie::find($request->id_categorie);
+            $item->delete();
+          }
+        }catch(Exception $e){
+          return redirect()->back()->with('alert_danger',"Erreur de suppression de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
+        }
+        return redirect()->back()->with('alert_success',"Element supprimée");
       }
-    }catch(Exception $e){
-      return redirect()->back()->with('alert_danger',"Erreur de suppression de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
+      //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+      //CRUD Article @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+      public function addArticle(Request $request){
+        try{
+          //dd($request->all());
+          $item = new Article();
+          $item->id_categorie = $request->id_categorie;
+          $item->id_unite = $request->id_unite;
+          $item->code = $request->code;
+          $item->designation = $request->designation;
+          $item->description = $request->description;
+          $item->save();
+        }catch(Exception $e){
+          return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
+        }
+        return redirect()->back()->with('alert_success',"Elément créé");
+      }
+      public function updateArticle(Request $request){
+        try{
+          $item = Article::find($request->id_article);
+          $item->id_categorie = $request->id_categorie;
+          $item->id_unite = $request->id_unite;
+          $item->code = $request->code;
+          $item->designation = $request->designation;
+          $item->description = $request->description;
+          $item->save();
+        }catch(Exception $e){
+          return redirect()->back()->withInput()->with('alert_danger',"Erreur de modification de l'élement.<br>Message d'erreur: ".$e->getMessage().".");
+        }
+        return redirect()->back()->with('alert_success',"Element Modifiée");
+      }
+      public function deleteArticle(Request $request){
+        try{
+          if(Stock::where('id_article',$request->id_article)->get()->first() != null){
+            return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
+          }
+          else{
+            $item = Article::find($request->id_article);
+            $item->delete();
+          }
+        }catch(Exception $e){
+          return redirect()->back()->with('alert_danger',"Erreur de suppression de l'élément.<br>Message d'erreur: ".$e->getMessage().".");
+        }
+        return redirect()->back()->with('alert_success',"Element supprimée");
+      }
+      //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+      public function categorie($id_categorie, Request $request){
+        $categorie = Categorie::find($id_categorie);
+        $articles = collect(DB::select("SELECT c.libelle as libelle_categorie, a.* FROM articles a LEFT JOIN categories c ON c.id_categorie=a.id_categorie WHERE c.id_categorie=$id_categorie ORDER BY created_at desc;"));
+        return view('user.categorie')->with(compact('articles','categorie','unites','stocksNumber','total_ventes','total_ventes_mois'));
+      }
+
+
     }
-    return redirect()->back()->with('alert_success',"Element supprimée");
-  }
-  //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-  public function categorie($id_categorie, Request $request){
-    return "Categorie: $id_categorie";
-  }
-
-
-}

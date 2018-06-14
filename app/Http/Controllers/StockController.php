@@ -15,9 +15,8 @@ use \Exception;
 
 class StockController extends Controller{
 
-  public function stock(Request $request)  {
+  public function stock(Request $request) {
     $title = "Stock";
-    $categories = Categorie::all();
     $articles = collect(DB::select(
       "SELECT c.libelle as libelle_categorie, u.libelle as libelle_unite, a.*, s.quantite
       FROM articles a
@@ -25,7 +24,6 @@ class StockController extends Controller{
       LEFT JOIN categories c ON c.id_categorie=a.id_categorie
       LEFT JOIN unites u ON u.id_unite=a.id_unite;"
     ));
-    $unites = Unite::all();
     $stockINsCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=1;"))->count();
     $stockOUTsCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=2;"))->count();
     $ventesCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=3;"))->count();
@@ -40,7 +38,7 @@ class StockController extends Controller{
 
     //dump($articles->count()); foreach ($articles as $item) dump($item);
 
-    return view('user.stock')->with(compact('articles', 'categories', 'unites', 'stocks', 'stockINsCount', 'stockOUTsCount', 'title', 'ventesCount'));
+    return view('user.stock')->with(compact('articles', 'stocks', 'stockINsCount', 'stockOUTsCount', 'title', 'ventesCount'));
   }
 
   //Stock in *******************************************************************
@@ -112,14 +110,14 @@ class StockController extends Controller{
 
   public function stockINs(Request $request){
     $title = "Historique des entrées de stock";
-    $unites = Unite::all();
     $stockINs = collect(DB::select(
       "SELECT t.id_transaction, t.id_detail, t.created_at,
       count(ta.id_transaction_article) as nombre_articles
       FROM transactions t
       LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
       WHERE t.id_type_transaction=1
-      GROUP BY t.id_transaction, t.id_detail, t.created_at;"
+      GROUP BY t.id_transaction, t.id_detail, t.created_at
+      ORDER BY t.created_at desc;"
     ));
     //foreach ($stockINs as $item) dump($item);
     return view('user.stockINs')->with(compact('articles', 'unites', 'stockINs', 'title'));
@@ -142,12 +140,10 @@ class StockController extends Controller{
       LEFT JOIN articles a ON a.id_article=ta.id_article
       LEFT JOIN categories c ON c.id_categorie=a.id_categorie
       LEFT JOIN unites u ON u.id_unite=a.id_unite
+      LEFT JOIN stocks s ON s.id_article=ta.id_article
       WHERE ta.id_transaction=$id_transaction;"
     ));
     $transaction = Transaction::find($id_transaction);
-
-    //foreach ($transaction_articles as $item) dump($item);
-
     return view('user.stockIN')->with(compact('articles','transaction', 'title','transaction_articles'));
   }
   //****************************************************************************
@@ -157,7 +153,6 @@ class StockController extends Controller{
     try {
       $id_articles = $request->get('id_article');
       $quantites = $request->get('quantite');
-
       //verify data
       $hasData = false;
       foreach ($id_articles as $index => $id_article) {
@@ -216,7 +211,6 @@ class StockController extends Controller{
 
   public function stockOUTs(Request $request){
     $title = "Historique des sorties de stock";
-    $unites = Unite::all();
     $stockOUTs = collect(DB::select(
       "SELECT t.id_transaction, t.id_detail, t.created_at,
       count(ta.id_transaction_article) as nombre_articles
@@ -226,7 +220,7 @@ class StockController extends Controller{
       GROUP BY t.id_transaction, t.id_detail, t.created_at;"
     ));
     //foreach ($stockINs as $item) dump($item);
-    return view('user.stockOUTs')->with(compact('articles', 'unites', 'stockOUTs', 'title'));
+    return view('user.stockOUTs')->with(compact('stockOUTs', 'title'));
   }
 
   public function stockOUT($id_transaction, Request $request){
@@ -249,10 +243,7 @@ class StockController extends Controller{
       WHERE ta.id_transaction=$id_transaction;"
     ));
     $transaction = Transaction::find($id_transaction);
-
-    //foreach ($transaction_articles as $item) dump($item);
-
-    return view('user.stockOUT')->with(compact('articles','transaction', 'title','transaction_articles'));
+    return view('user.stockOUT')->with(compact('transaction', 'title','transaction_articles'));
   }
   //****************************************************************************
 
@@ -323,23 +314,22 @@ class StockController extends Controller{
 
   public function ventes(Request $request){
     $title = "Historique des ventes";
-
+    //quantite * prix des ventes du dernier mois
     $total_ventes_mois = collect(DB::select(
       "SELECT MONTH(t.created_at), sum(ta.prix*ta.quantite) as total
       FROM transactions t
       LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
       WHERE t.id_type_transaction=3
       GROUP BY MONTH(t.created_at);"
-    ));
-    $total_ventes_mois = $total_ventes_mois->last()->total;
+    ))->last()->total;
 
+    //quantite * prix des ventes
     $total_ventes = collect(DB::select(
       "SELECT sum(ta.prix*ta.quantite) as total
       FROM transactions t
       LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
       WHERE t.id_type_transaction=3;"
-    ));
-    $total_ventes = $total_ventes->last()->total;
+    ))->last()->total;
 
     $ventes = collect(DB::select(
       "SELECT t.id_transaction, t.id_detail, t.created_at,
@@ -350,9 +340,7 @@ class StockController extends Controller{
       GROUP BY t.id_transaction, t.id_detail, t.created_at
       ORDER BY t.created_at desc;"
     ));
-    //dump($ventes);
-
-    return view('user.ventes')->with(compact('articles', 'unites', 'ventes', 'title', 'total_ventes', 'total_ventes_mois'));
+    return view('user.ventes')->with(compact('ventes', 'title', 'total_ventes', 'total_ventes_mois'));
   }
 
   public function vente($id_transaction, Request $request){
@@ -375,10 +363,7 @@ class StockController extends Controller{
       WHERE ta.id_transaction=$id_transaction;"
     ));
     $transaction = Transaction::find($id_transaction);
-
-    //foreach ($transaction_articles as $item) dump($item);
-
-    return view('user.vente')->with(compact('articles','transaction', 'title','transaction_articles'));
+    return view('user.vente')->with(compact('transaction', 'title','transaction_articles'));
   }
   //****************************************************************************
 }
