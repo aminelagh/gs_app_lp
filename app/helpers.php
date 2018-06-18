@@ -24,3 +24,19 @@ if(!function_exists('formatDateTime')){
     return Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$date)->format("d/m/Y H:i:s");
   }
 }
+
+if(!function_exists('formatSimpleDate')){
+  function formatSimpleDate($date){
+    if($date == null)
+    return '';
+    return Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$date)->format("Y-m-d");
+  }
+}
+
+if(!function_exists('getYear')){
+  function getYear($date){
+    if($date == null)
+    return '';
+    return Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$date)->format("Y");
+  }
+}

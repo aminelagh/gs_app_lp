@@ -33,8 +33,37 @@ class UserController extends Controller{
         FROM transactions t
         LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
         WHERE t.id_type_transaction=3;"))->last()->total;
-        return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber','total_ventes','total_ventes_mois'));
+
+        $ventesByYear = collect(DB::select(
+          "SELECT YEAR(t.created_at) AS year, sum(ta.prix*ta.quantite) as total
+          FROM transactions t
+          LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+          WHERE t.id_type_transaction=3
+          GROUP BY YEAR(t.created_at)
+          ORDER BY YEAR(t.created_at) asc;"
+        ));
+
+        $ventesByMonth = collect(DB::select(
+          "SELECT MONTH(t.created_at) AS month,YEAR(t.created_at) AS year, sum(ta.prix*ta.quantite) as total
+          FROM transactions t
+          LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+          WHERE t.id_type_transaction=3
+          GROUP BY MONTH(t.created_at),YEAR(t.created_at)
+          ORDER BY YEAR(t.created_at),MONTH(t.created_at) asc;"
+        ));
+        $articlesParCategorie = collect(DB::select(
+          "SELECT c.libelle as libelle_categorie, count(a.id_article) as nombre_articles
+          FROM articles a
+          LEFT JOIN categories c ON c.id_categorie=a.id_categorie
+          GROUP BY c.libelle
+          ORDER BY c.libelle asc;"
+        ));
+        //foreach ($articlesParCategorie as $value)  dump($value);
+
+        return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber','total_ventes','total_ventes_mois','ventesByYear','articlesParCategorie', 'ventesByMonth'));
       }
+
+
 
       //CRUD Categorie @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       public function addCategorie(Request $request){

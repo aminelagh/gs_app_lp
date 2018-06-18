@@ -226,9 +226,12 @@
   <script src="{{ asset('toastr/toastr.min.js') }}"></script>
   <script src="{{ asset('toastr/toastr.init.js') }}"></script>
   <!-- DATA TABES SCRIPT -->
-
   <script src="{{ asset('plugins/datatables2/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
-
+  <!-- armchart -->
+  <script src="{{ asset('amcharts/amcharts.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('amcharts/serial.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('amcharts/pie.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('amcharts/lang/fr.js') }}" type="text/javascript"></script>
 
   <script>
   var options = {

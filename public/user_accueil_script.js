@@ -1,3 +1,35 @@
+$(document).ready(function(){
+  $('#categoriesTable').DataTable({
+    "dom": '<lf<Bt>ip>',
+    "info": false,
+    "lengthMenu": [
+      [ 5, 10, 25, 50, -1 ],
+      [ '5', '10', '25', '50', 'Tout' ]
+    ],
+    "columnDefs": [
+      //{ targets:-1, visible: true, orderable: true, searchable: true},
+      //{ targets: 0, visible: true, type: "num"},
+      //{ targets: 1, visible: true},
+    ],
+    //order: [[ 0, "asc" ]],
+  });
+
+  $('#articlesTable').DataTable({
+    dom: '<lf<Bt>ip>',
+    info: false,
+    lengthMenu: [
+      [ 5, 10, 25, 50, -1 ],
+      [ '5', '10', '25', '50', 'Tout' ]
+    ],
+    columnDefs: [
+      { targets: 0, visible: false, orderable: true, searchable: true},
+      //{ targets: 0, visible: true, type: "num"},
+      //{ targets: 1, visible: true},
+    ],
+    //order: [[ 0, "asc" ]],
+  });
+
+});
 
 //Categorie @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 function updateCategorieFunction(id_categorie, libelle){

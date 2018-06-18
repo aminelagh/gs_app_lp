@@ -63,90 +63,138 @@
       </div>
     </div>
 
-    </div>
-
-
   </div>
 
-  <div class="row">
 
-    <div class="col-md-4">
-      {{-- *********************************** Categories ************************************* --}}
-      <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Catégories <span class="badge badge-succuess badge-pill" title="Nombre de catégories"> {{ $categories->count() }}</span></h3>
-          <div class="box-tools pull-right">
-            <button  data-toggle="modal" href="#modalAddCategorie" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter catégorie</button>
-            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-          </div>
-        </div>
-        <div class="box-body">
-          <div class="row">
-            <div class=" col-md-12">
-              <table id="categoriesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th>Categorie</th><th>Outils</th></tr></thead>
-                <tbody>
-                  @foreach($categories as $item)
-                    <tr align="center">
-                      <td>{{ $item->libelle }}</td>
-                      <td align="center">
-                        <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateCategorie" onclick='updateCategorieFunction({{ $item->id_categorie }},"{{ $item->libelle }}" );' title="Modifier" ></i>
-                        <i class="glyphicon glyphicon-trash" onclick="deleteCategorieFunction({{ $item->id_categorie }},'{{ $item->libelle }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="box-footer"></div>
+</div>
+
+
+<div class="row">
+  <section class="col-lg-6 connectedSortable">
+
+    <div class="nav-tabs-custom">
+      <!-- Tabs within a box -->
+      <ul class="nav nav-tabs pull-right">
+        <li class="pull-left header"><i class="fa fa-inbox"></i> Ventes par année</li>
+      </ul>
+      <div class="tab-content no-padding">
+        <div id="amchart1" style="width: 100%; height: 400px;"></div>
       </div>
-      {{-- *********************************** Categories ************************************* --}}
-    </div>
+    </div><!-- /.nav-tabs-custom -->
 
-    <div class="col-md-8">
-      {{-- *********************************** Articles ************************************* --}}
-      <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Articles <span class="badge badge-succuess badge-pill" title="Nombre d'articles"> {{ $articles->count() }}</span></h3>
-          <div class="box-tools pull-right">
-            <button data-toggle="modal" href="#modalAddArticle" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter article</button>
-            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-          </div>
-        </div>
-        <div class="box-body">
-          <div class="row">
-            <div class=" col-md-12">
-              <table id="articlesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Outils</th></tr></thead>
-                <tbody>
-                  @foreach($articles as $item)
-                    <tr align="center">
-                      <td>{{ $loop->iteration }}</td>
-                      <td>{{ $item->code }}</td>
-                      <td>{{ $item->designation }}</td>
-                      <td><a href="{{ route('categorie',[$item->id_categorie]) }}">{{ $item->libelle_categorie }}</a></td>
-                      <td align="center">
-                        <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateArticle"
-                        onclick='updateArticleFunction({{ $item->id_article }},{{ $item->id_categorie }},{{ $item->id_unite }},"{{ $item->code }}","{{ $item->designation }}","{{ $item->description }}");' title="Modifier" ></i>
-                        <i class="glyphicon glyphicon-trash" onclick="deleteArticleFunction({{ $item->id_article }},'{{ $item->code }}','{{ $item->designation }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="box-footer"></div>
+  </section>
+
+  <section class="col-lg-6 connectedSortable">
+
+    <div class="nav-tabs-custom">
+      <!-- Tabs within a box -->
+      <ul class="nav nav-tabs pull-right">
+        <li class="pull-left header"><i class="fa fa-inbox"></i> Ventes par mois</li>
+      </ul>
+      <div class="tab-content no-padding">
+        <div id="amchart2" style="width: 100%; height: 400px;"></div>
       </div>
-      {{-- *********************************** Articles ************************************* --}}
-    </div>
+    </div><!-- /.nav-tabs-custom -->
 
+  </section>
+</div>
+
+<div class="row">
+  <section class="col-lg-6 connectedSortable">
+
+    <div class="nav-tabs-custom">
+      <!-- Tabs within a box -->
+      <ul class="nav nav-tabs pull-right">
+        <li class="pull-left header"><i class="fa fa-inbox"></i> Articles par catégorie</li>
+      </ul>
+      <div class="tab-content no-padding">
+        <div id="amchart3" style="width: 100%; height: 400px;"></div>
+      </div>
+    </div><!-- /.nav-tabs-custom -->
+
+  </section>
+</div>
+
+
+<div class="row">
+
+  <div class="col-md-4">
+    {{-- *********************************** Categories ************************************* --}}
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Catégories <span class="badge badge-succuess badge-pill" title="Nombre de catégories"> {{ $categories->count() }}</span></h3>
+        <div class="box-tools pull-right">
+          <button  data-toggle="modal" href="#modalAddCategorie" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter catégorie</button>
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <div class=" col-md-12">
+            <table id="categoriesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+              <thead><tr><th>Categorie</th><th>Outils</th></tr></thead>
+              <tbody>
+                @foreach($categories as $item)
+                  <tr align="center">
+                    <td>{{ $item->libelle }}</td>
+                    <td align="center">
+                      <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateCategorie" onclick='updateCategorieFunction({{ $item->id_categorie }},"{{ $item->libelle }}" );' title="Modifier" ></i>
+                      <i class="glyphicon glyphicon-trash" onclick="deleteCategorieFunction({{ $item->id_categorie }},'{{ $item->libelle }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
+                    </td>
+                  </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="box-footer"></div>
+    </div>
+    {{-- *********************************** Categories ************************************* --}}
   </div>
+
+  <div class="col-md-8">
+    {{-- *********************************** Articles ************************************* --}}
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Articles <span class="badge badge-succuess badge-pill" title="Nombre d'articles"> {{ $articles->count() }}</span></h3>
+        <div class="box-tools pull-right">
+          <button data-toggle="modal" href="#modalAddArticle" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter article</button>
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div>
+      </div>
+      <div class="box-body">
+        <div class="row">
+          <div class=" col-md-12">
+            <table id="articlesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+              <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Outils</th></tr></thead>
+              <tbody>
+                @foreach($articles as $item)
+                  <tr align="center">
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->code }}</td>
+                    <td>{{ $item->designation }}</td>
+                    <td><a href="{{ route('categorie',[$item->id_categorie]) }}">{{ $item->libelle_categorie }}</a></td>
+                    <td align="center">
+                      <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateArticle"
+                      onclick='updateArticleFunction({{ $item->id_article }},{{ $item->id_categorie }},{{ $item->id_unite }},"{{ $item->code }}","{{ $item->designation }}","{{ $item->description }}");' title="Modifier" ></i>
+                      <i class="glyphicon glyphicon-trash" onclick="deleteArticleFunction({{ $item->id_article }},'{{ $item->code }}','{{ $item->designation }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
+                    </td>
+                  </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="box-footer"></div>
+    </div>
+    {{-- *********************************** Articles ************************************* --}}
+  </div>
+
+</div>
 
 @endsection
 
@@ -389,39 +437,144 @@
 @endsection
 
 @section('scripts')
+  {{--  @@@@@@@@@@@@@@@@@@@@@@@@@@  chart 1  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  --}}
   <script>
-  $(document).ready(function(){
-    $('#categoriesTable').DataTable({
-      "dom": '<lf<Bt>ip>',
-      "info": false,
-      "lengthMenu": [
-        [ 5, 10, 25, 50, -1 ],
-        [ '5', '10', '25', '50', 'Tout' ]
-      ],
-      "columnDefs": [
-        //{ targets:-1, visible: true, orderable: true, searchable: true},
-        //{ targets: 0, visible: true, type: "num"},
-        //{ targets: 1, visible: true},
-      ],
-      //order: [[ 0, "asc" ]],
-    });
+  var chart;
+  var graph;
 
-    $('#articlesTable').DataTable({
-      dom: '<lf<Bt>ip>',
-      info: false,
-      lengthMenu: [
-        [ 5, 10, 25, 50, -1 ],
-        [ '5', '10', '25', '50', 'Tout' ]
-      ],
-      columnDefs: [
-        { targets: 0, visible: false, orderable: true, searchable: true},
-        //{ targets: 0, visible: true, type: "num"},
-        //{ targets: 1, visible: true},
-      ],
-      //order: [[ 0, "asc" ]],
-    });
+  var chartData = [
+    @foreach ($ventesByYear as $item)
+    {
+      "year": "{{ $item->year }}",
+      "value": {{ $item->total==null ? 0 : $item->total }}
+    },
+    @endforeach
+  ];
 
+  AmCharts.ready(function () {
+    // SERIAL CHART
+    chart = new AmCharts.AmSerialChart();
+    chart.dataProvider = chartData;
+    chart.categoryField = "year";
+    chart.startDuration = 1;
+
+    // AXES
+    // category
+    var categoryAxis = chart.categoryAxis;
+    categoryAxis.labelRotation = 0;
+    categoryAxis.gridPosition = "start";
+
+    // value
+    // in case you don't want to change default settings of value axis,
+    // you don't need to create it, as one value axis is created automatically.
+
+    // GRAPH
+    var graph = new AmCharts.AmGraph();
+    graph.valueField = "value";
+    graph.balloonText = "[[category]]: <b>[[value]] Dhs</b>";
+    graph.type = "column";
+    graph.lineAlpha = 0;
+    graph.fillAlphas = 0.8;
+    chart.addGraph(graph);
+
+    // CURSOR
+    var chartCursor = new AmCharts.ChartCursor();
+    chartCursor.cursorAlpha = 0;
+    chartCursor.zoomable = false;
+    chartCursor.categoryBalloonEnabled = false;
+    chart.addChartCursor(chartCursor);
+
+    chart.creditsPosition = "top-right";
+
+    chart.write("amchart1");
   });
+
+
   </script>
-  <script src="{{ asset('user_accueil_script.js') }}" type="text/javascript"></script>
+  {{--  @@@@@@@@@@@@@@@@@@@@@@@@@@  chart 1  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  --}}
+
+  {{--  @@@@@@@@@@@@@@@@@@@@@@@@@@  chart 2  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  --}}
+  <script>
+  var chart;
+  var graph;
+
+  var chart2Data = [
+    @foreach ($ventesByMonth as $item)
+    {
+      "month": "{{ $item->month }}/{{ $item->year }}",
+      "value": {{ $item->total==null ? 0 : $item->total }}
+    },
+    @endforeach
+  ];
+
+  AmCharts.ready(function () {
+    // SERIAL CHART
+    chart = new AmCharts.AmSerialChart();
+    chart.dataProvider = chart2Data;
+    chart.categoryField = "month";
+    chart.startDuration = 2;
+    chart.fillColorsField = "#000000";
+
+    // AXES
+    // category
+    var categoryAxis = chart.categoryAxis;
+    categoryAxis.labelRotation = 45;
+    categoryAxis.gridPosition = "start";
+
+    // value
+    // in case you don't want to change default settings of value axis,
+    // you don't need to create it, as one value axis is created automatically.
+
+    // GRAPH
+    var graph = new AmCharts.AmGraph();
+    graph.valueField = "value";
+    graph.balloonText = "[[category]]: <b>[[value]] Dhs</b>";
+    graph.type = "column";
+    graph.lineAlpha = 0;
+    graph.fillAlphas = 0.8;
+    chart.addGraph(graph);
+
+    // CURSOR
+    var chartCursor = new AmCharts.ChartCursor();
+    chartCursor.cursorAlpha = 0;
+    chartCursor.zoomable = false;
+    chartCursor.categoryBalloonEnabled = true;
+    chart.addChartCursor(chartCursor);
+    chart.creditsPosition = "top-right";
+
+    chart.write("amchart2");
+  });
+
+
+  </script>
+  {{--  @@@@@@@@@@@@@@@@@@@@@@@@@@  chart 2  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  --}}
+
+  {{-- @@@@@@@@@@@@@@@@@@@@@@@@@@@  chart 2   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  --}}
+  <script>
+  var chart = AmCharts.makeChart("amchart3", {
+    "type": "pie",
+    "theme": "light",
+    "dataProvider": [
+      @foreach ($articlesParCategorie as $item)
+      {
+        "categorie": "{{ $item->libelle_categorie }}",
+        "value": {{ $item->nombre_articles or 0 }}
+      },
+      @endforeach
+    ],
+    "valueField": "value",
+    "titleField": "categorie",
+    "outlineAlpha": 0.4,
+    "depth3D": 15,
+    "balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>",
+    "angle": 30,
+    "export": {
+      "enabled": true
+    }
+  } );
+
+</script>
+{{-- @@@@@@@@@@@@@@@@@@@@@@@@@@@  chart 2   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  --}}
+
+<script src="{{ asset('user_accueil_script.js') }}" type="text/javascript"></script>
 @endsection
