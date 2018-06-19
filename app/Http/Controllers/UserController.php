@@ -51,13 +51,17 @@ class UserController extends Controller{
           GROUP BY MONTH(t.created_at),YEAR(t.created_at)
           ORDER BY YEAR(t.created_at),MONTH(t.created_at) asc;"
         ));
+
         $articlesParCategorie = collect(DB::select(
-          "SELECT c.libelle as libelle_categorie, count(a.id_article) as nombre_articles
-          FROM articles a
-          LEFT JOIN categories c ON c.id_categorie=a.id_categorie
-          GROUP BY c.libelle
-          ORDER BY c.libelle asc;"
+          "SELECT C.libelle as libelle_categorie, count(s.id_article) as nombre_articles
+          FROM categories c
+          LEFT JOIN articles a ON a.id_categorie=c.id_categorie
+          LEFT JOIN stocks s ON s.id_article=a.id_article
+          GROUP BY c.libelle;"
         ));
+
+
+
         //foreach ($articlesParCategorie as $value)  dump($value);
 
         return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber','total_ventes','total_ventes_mois','ventesByYear','articlesParCategorie', 'ventesByMonth'));
