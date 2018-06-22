@@ -45,6 +45,9 @@ Route::group(['middleware' => 'user'], function () {
 
   Route::get('/ventes', 'StockController@ventes')->name('ventes');
   Route::get('/vente/{id_transaction}', 'StockController@vente')->name('vente');
+  Route::post('/annulerVente', 'UserController@annulerVente')->name('annulerVente');
+
+  Route::get('/articles', 'UserController@articles')->name('articles');
 
   Route::get('/categorie/{id_categorie}','UserController@categorie')->name('categorie');
   Route::post('/addCategorie', 'UserController@addCategorie')->name('addCategorie');
@@ -54,6 +57,7 @@ Route::group(['middleware' => 'user'], function () {
   Route::post('/addArticle', 'UserController@addArticle')->name('addArticle');
   Route::post('/updateArticle', 'UserController@updateArticle')->name('updateArticle');
   Route::post('/deleteArticle', 'UserController@deleteArticle')->name('deleteArticle');
+
 
 
 });

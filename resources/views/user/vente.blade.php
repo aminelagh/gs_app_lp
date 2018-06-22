@@ -49,7 +49,21 @@
             </div>
           </div>
         </div>
-        <div class="box-footer"></div>
+        <div class="box-footer" align="right">
+          <button onclick="annulerVenteFunction()" class="btn btn-danger">Annuler la vente</button>
+          <form method="POST" id="formAnnulerVente" action="{{ route('annulerVente') }}">
+            @csrf
+            <input type="hidden" name="id_transaction" value="{{ $transaction->id_transaction }}">
+          </form>
+        </div>
+        <script>
+        function annulerVenteFunction(){
+          var go = confirm('Vos êtes sur le point d\'annuler cette vente.\n voulez-vous continuer?');
+          if(go){
+            document.getElementById("formAnnulerVente").submit();
+          }
+        }
+        </script>
       </div>
       {{-- *********************************** vente details ************************************* --}}
     </div>

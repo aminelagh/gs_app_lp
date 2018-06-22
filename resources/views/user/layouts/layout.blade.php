@@ -49,6 +49,7 @@
             <ul class="nav navbar-nav">
               <li class="active"><a href="{{ route('accueil') }}">Accueil</a></li>
               <li class="active"><a href="{{ route('stock') }}">Stock</a></li>
+              <li class="active"><a href="{{ route('articles') }}">Mes articles</a></li>
 
             </ul>
 
