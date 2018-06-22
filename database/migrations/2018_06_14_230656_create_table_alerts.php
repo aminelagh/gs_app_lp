@@ -13,10 +13,9 @@ class CreateTableAlerts extends Migration
   */
   public function up()
   {
-
     Schema::create('alerts', function (Blueprint $table) {
       $table->increments('id_alert');
-      $table->increments('id_article');
+      $table->integer('id_article');
       $table->float('quantite_min',8,2);
       $table->timestamps();
       $table->engine = 'InnoDB';

@@ -41,7 +41,7 @@
       <div class="small-box bg-yellow">
         <div class="inner">
           <h3>{{ $total_ventes_mois != null ? $total_ventes_mois." Dhs" : 0 }}</h3>
-          <p>Total somme des ventes du dernier mois</p>
+          <h4 title="Total des ventes du dernier mois">Chiffre d'affaires</h4>
         </div>
         <div class="icon">
           <i class="ion ion-calendar"></i>
@@ -104,7 +104,7 @@
         </div>
       </div>
     </section>
-    
+
   </div>
 
 

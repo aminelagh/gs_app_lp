@@ -102,7 +102,7 @@ class AuthController extends Controller
     }elseif( Sentinel::inRole('user') ){
       return redirect()->route('accueil');
     }else{
-      return redirect()->route('errorPage')->with("alert_danger","Le rôle de l'utilisateur authentifié n'est pas répertorié, veuillez contacter l'administrateur de l'application.");
+      return redirect()->route('error')->with("alert_danger","Le rôle de l'utilisateur authentifié n'est pas répertorié, veuillez contacter l'administrateur de l'application.");
     }
   }
 

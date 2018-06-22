@@ -15,8 +15,8 @@ class CreateTableDetail extends Migration
   {
     Schema::create('details', function (Blueprint $table) {
       $table->increments('id_detail');
-      $table->string('client');
-      $table->string('description');
+      $table->string('client')->nullable();
+      $table->string('description')->nullable();
       $table->timestamps();
       $table->engine = 'InnoDB';
     });

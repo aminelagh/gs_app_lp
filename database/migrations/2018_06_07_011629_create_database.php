@@ -29,9 +29,9 @@ class CreateDatabase extends Migration
 
     Schema::create('articles', function (Blueprint $table) {
       $table->increments('id_article');
-      $table->integer('id_categorie');
+      $table->integer('id_categorie')->nullable();
       $table->integer('id_unite')->nullable();
-      $table->string('code');
+      $table->string('code')->unique();
       $table->string('designation');
       $table->string('description')->nullable();
       $table->timestamps();
@@ -40,7 +40,7 @@ class CreateDatabase extends Migration
 
     Schema::create('stocks', function (Blueprint $table) {
       $table->increments('id_stock');
-      $table->integer('id_article');
+      $table->integer('id_article')->unique();
       $table->float('quantite',8,2);
       $table->timestamps();
       $table->engine = 'InnoDB';
@@ -56,17 +56,18 @@ class CreateDatabase extends Migration
     Schema::create('transactions', function (Blueprint $table) {
       $table->increments('id_transaction');
       $table->integer('id_type_transaction');
-      $table->integer('id_detail');
+      $table->integer('id_detail')->nullable();
+      $table->boolean('valide')->nullable()->default(true);
       $table->timestamps();
       $table->engine = 'InnoDB';
     });
 
-    Schema::create('transation_articles', function (Blueprint $table) {
+    Schema::create('transaction_articles', function (Blueprint $table) {
       $table->increments('id_transaction_article');
       $table->integer('id_transaction');
       $table->integer('id_article');
       $table->float('quantite',8,2);
-      $table->float('prix',8,2);
+      $table->float('prix',8,2)->nullable();
       $table->timestamps();
       $table->engine = 'InnoDB';
     });

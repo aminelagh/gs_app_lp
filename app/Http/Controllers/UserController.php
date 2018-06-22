@@ -69,27 +69,6 @@ class UserController extends Controller{
     return view('user.accueil')->with(compact('articles','categories','unites','stocksNumber','total_ventes','total_ventes_mois','ventesByYear','articlesParCategorie', 'ventesByMonth'));
   }
 
-  public function annulerVente(Request $request){
-    dump($request->all());
-    $transaction = Transaction::find($request->id_transaction);
-    $transaction_articles = Transaction_article::whereIdTransaction($request->id_transaction)->get();
-    dump($transaction);
-    dump($transaction_articles);
-    foreach($transaction_articles as $ta){
-      $id_article = $ta->id_article;
-      $quantite = $ta->quantite;
-
-      //update Stock
-      $stock = Stock::whereIdArticle($id_article)->get()->first();
-      $stock->quantite += $quantite;
-      $stock->save();
-      //echo "Stock: $stock->id_stock, $stock->id_article, $stock->quantite <br>";
-    }
-    //update the transactions
-    //$transaction->valide = false;
-    $transaction->save();
-
-  }
 
   public function articles(Request $request){
     $categories = Categorie::all();
