@@ -106,6 +106,14 @@ class VenteController extends Controller
       }
 
       if ($hasData) {
+        $vente = Transaction::find($id_transaction);
+        $detail = Detail::find($id_detail);
+        $articles = Transaction_article::whereIdTransaction($id_transaction)->get();
+
+        $data = [ $vente, $detail, $articles ];
+        $pdf = PDF::loadView('pdf.facture', $data)->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
+        return $pdf->stream();
+
         return redirect()->back()->with('alert_success', "Stock mis à jour");
       } else {
         return redirect()->back()->with('alert_warning', "Veuillez remplir le formulaire.");

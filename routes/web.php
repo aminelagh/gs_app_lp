@@ -26,8 +26,17 @@ Route::get('/s',function(){
   //return $pdf->stream();
 
   $data = [ "no data" ];
-  $pdf = PDF::loadView('pdf.facture')->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
+  //$pdf = PDF::loadView('pdf.facture')->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
+  //return $pdf->stream();
+
+  $vente = Transaction::find(42);
+  $detail = Detail::find(1);
+  $articles = Transaction_article::whereIdTransaction(42)->get();
+
+  //$data = [ 'vente' => $vente, 'detail' => $detail, 'articles' => $articles ];
+  $pdf = PDF::loadView('pdf.facture', compact('articles','vente','detail') )->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
   return $pdf->stream();
+
 });
 
 

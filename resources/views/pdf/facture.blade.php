@@ -1,159 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>Facture</title>
-
+  <meta charset="utf-8">
+  <title>Invoice</title>
+  <link rel="stylesheet" href="style_2.css">
   <style>
-  @font-face {    font-family: SourceSansPro;    src: url(SourceSansPro-Regular.ttf);  }
-  .clearfix:after {content: "";display: table;clear: both;}
-  a {    color: #0087C3;    text-decoration: none;  }
-  body {    position: relative;    /*width: 21cm;    height: 29.7cm; */   margin: 0 auto;    color: #555555;    background: #FFFFFF;    font-family: Arial, sans-serif;    font-size: 14px;    font-family: SourceSansPro;  }
-  header {    padding: 10px 0;    margin-bottom: 20px;    border-bottom: 1px solid #AAAAAA;  }
-  #logo {    float: left;    margin-top: 8px;  }
-  #logo img {    height: 50px;  }
-  #company {    float: right;    text-align: right;  }
-  #details {    margin-bottom: 50px;  }
-  #client {    padding-left: 6px;    border-left: 6px solid #0087C3;    float: left;  }
-  #client .to {    color: #777777;  }
-  h2.name {    font-size: 1.4em;    font-weight: normal;    margin: 0;  }
-  #invoice {    float: right;    text-align: right;  }
-  #invoice h1 {    color: #0087C3;    font-size: 2.4em;    line-height: 1em;    font-weight: normal;    margin: 0  0 10px 0;  }
-  #invoice .date {    font-size: 1.1em;    color: #777777;  }
+  /* reset *
+  *  {
+  border: 0;  box-sizing: content-box;  color: inherit;  font-family: inherit;  font-size: inherit;  font-style: inherit;  font-weight: inherit;  line-height: inherit;
+  list-style: none;  margin: 0;  padding: 0;  text-decoration: none;  vertical-align: top;  }
+  */
 
-  table {     width: 100%;    border-collapse: collapse;    border-spacing: 0;    margin-bottom: 20px;  }
-  table th {  padding: 10px;  background: #EEEEEE;    text-align: center;    border-bottom: 1px solid #FFFFFF;  white-space: nowrap;    font-weight: normal;  }
-  table td {  padding: 5px;   background: #EEEEEE;    text-align: center;    border-bottom: 1px solid #FFFFFF;   text-align: right;}
-  table td h3{    color: #000000;    font-size: 1.2em;    font-weight: normal;    margin: 0 0 0.2em 0;  }
-  table .no {    color: #FFFFFF;    font-size: 1.4em;    background: #57B223;  }
-  table .desc {    text-align: left;  }
-  table .unit {    background: #DDDDDD;  }
-  table .qty {  }
-  table .total {    background: #57B223;    color: #FFFFFF;  }
-  table td.unit,
-  table td.qty,
-  table td.total {    font-size: 1.2em; }
-  table tbody tr:last-child td {    border: none;  }
-  table tfoot td {    padding: 10px 20px;    background: #FFFFFF;    border-bottom: none;    font-size: 1.2em;    white-space: nowrap;    border-top: 1px solid #AAAAAA;  }
-  table tfoot tr:first-child td {    border-top: none;  }
-  table tfoot tr:last-child td {    color: #57B223;    font-size: 1.4em;    border-top: 1px solid #57B223;  }
-  table tfoot tr td:first-child {    border: none;  }
+  /* content editable */
 
-  #thanks{    font-size: 2em;    margin-bottom: 50px;  }
-  #notices{    padding-left: 6px;    border-left: 6px solid #0087C3;  }
-  #notices .notice {    font-size: 1.2em;  }
-  footer { color: #777777; width: 100%; height: 30px; position: absolute; bottom: 0; border-top: 1px solid #AAAAAA; padding: 8px 0;text-align: center;  }
+  *[contenteditable] { border-radius: 0.25em; min-width: 1em; outline: 0; }
+  *[contenteditable] { cursor: pointer; }
+  *[contenteditable]:hover, *[contenteditable]:focus, td:hover *[contenteditable], td:focus *[contenteditable], img.hover { background: #DEF; box-shadow: 0 0 1em 0.5em #DEF; }
+  span[contenteditable] { display: inline-block; }
 
-  /** {margin: 10px;}*/
+  /* heading */
+  h1 { font: bold 100% sans-serif; letter-spacing: 0.5em; text-align: center; text-transform: uppercase; }
+
+  /* table */
+  table { font-size: 75%; table-layout: fixed; width: 100%; }
+  table { border-collapse: separate; border-spacing: 2px; }
+  th, td { border-width: 1px; padding: 0.5em; position: relative; text-align: left; }
+  th, td { border-radius: 0.25em; border-style: solid; }
+  th { background: #EEE; border-color: #BBB; }
+  td { border-color: #DDD; }
+
+  /* page */
+  html { font: 16px/1 'Open Sans', sans-serif; overflow: auto; padding: 0.5in; }
+  html { background: #000; cursor: default; }
+
+  body { box-sizing: border-box; height: 950px; margin: 0 auto; overflow: hidden; padding: 0.5in; width: 672px; }
+  body { background: #FFF; border-radius: 1px; box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5); }
+
+  /* header */
+  header { margin: 0 0 3em; }
+  header:after { clear: both; content: ""; display: table; }
+
+  header h1 { background: #888; border-radius: 0.25em; color: #FFF; margin: 0 0 1em; padding: 0.5em 0; }
+  header address { float: left; font-size: 75%; font-style: normal; line-height: 1.25; margin: 0 1em 1em 0; }
+  header address p { margin: 0 0 0.25em; font-size: 75%; }
+  header span, header img { display: block; float: right; }
+  header span { margin: 0 0 1em 1em; max-height: 25%; max-width: 60%; position: relative; }
+  header img { max-height: 100%; max-width: 100%; }
+  header input { cursor: pointer; -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; height: 100%; left: 0; opacity: 0; position: absolute; top: 0; width: 100%; }
+
+  /* article */
+  article, article address, table.meta, table.inventory { margin: 0 0 1.5em 0em; }
+  article:after { clear: both; content: ""; display: table; }
+  article h1 { clip: rect(0 0 0 0); position: absolute; }
+
+  article address { float: left; font-size: 125%; font-weight: bold; }
+
+  /* table meta & balance */
+  table.meta, table.balance { float: right; width: 36%; }
+  table.meta:after, table.balance:after { clear: both; content: ""; display: table; }
+
+  /* table meta */
+  table.meta th { width: 40%; }
+  table.meta td { width: 60%; }
+
+  /* table items */
+  table.inventory { clear: both; width: 100%; }
+  table.inventory th { font-weight: bold; text-align: center; }
+
+  table.inventory td:nth-child(1) { width: 5%;}
+  /*table.inventory td:nth-child(2) { width: 38%; }*/
+  table.inventory td:nth-child(3) { text-align: right; width: 15%; }
+  table.inventory td:nth-child(4) { text-align: right; width: 10%; }
+  table.inventory td:nth-child(5) { text-align: right; width: 15%; }
+
+  /* table balance */
+  table.balance th, table.balance td { width: 50%; }
+  table.balance td { text-align: right; }
+
+  /* aside */
+  aside h1 { border: none; border-width: 0 0 1px; margin: 0 0 1em; }
+  aside h1 { border-color: #999; border-bottom-style: solid; }
+
+  /* javascript
+  .add, .cut{    border-width: 1px;    display: block;    font-size: .8rem;    padding: 0.25em 0.5em;    float: left;    text-align: center;    width: 0.6em;  }
+  .add, .cut  {
+  background: #9AF;    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  background-image: -moz-linear-gradient(#00ADEE 5%, #0078A5 100%);
+  background-image: -webkit-linear-gradient(#00ADEE 5%, #0078A5 100%);
+  border-radius: 0.5em;    border-color: #0076A3;    color: #FFF;    cursor: pointer;    font-weight: bold;    text-shadow: 0 -1px 2px rgba(0,0,0,0.333);
+}
+.add { margin: -2.5em 0 0; }
+.add:hover { background: #00ADEE; }
+.cut { opacity: 0; position: absolute; top: 0; left: -1.5em; }
+.cut { -webkit-transition: opacity 100ms ease-in; }
+
+tr:hover .cut { opacity: 1; }
+
+@media print {
+* { -webkit-print-color-adjust: exact; }
+html { background: none; padding: 0; }
+body { box-shadow: none; margin: 0; }
+span:empty { display: none; }
+.add, .cut { display: none; }
+}*/
+
 </style>
-
 </head>
 <body>
-  <header class="clearfix">
-    <div id="logo">
-      <img src="facture/logo.png" title="logo">
-    </div>
-    <div id="company">
-      <h2 class="name">Company Name</h2>
-      <div>455 Foggy Heights, AZ 85004, US</div>
-      <div>(602) 519-0450</div>
-      <div><a href="mailto: lotisplast@gmail.com">lotisplast@gmail.com</a></div>
-    </div>
-  </div>
-</header>
-<main>
 
-  <div id="details" class="clearfix">
-    <div id="client">
-      <div class="to">Facture pour:</div>
-      <h2 class="name">{{ $detail->client or ' _  _  _  _  _  _  _  _  _ ' }}</h2>
-      <div class="address"></div>
-      <div class="email"><a href="mailto:john@example.com">john@example.com</a></div>
-    </div>
-    <div id="invoice">
-      <h1>INVOICE 3-2-1</h1>
-      <div class="date">Date of Invoice: 01/06/2014</div>
-      <div class="date">Due Date: 30/06/2014</div>
-    </div>
-  </div>
+  <header>
+    <h1>Facture</h1>
+    <address contenteditable>
+      <p>Lotis Plast</p>
+      <p>Route de Tiznit, Ait Melloul</p>
+      <p>05 28 30 87 68 | 06 61 18 68 39</p>
+      <p>lotisplast@gmail.com</p>
+    </address>
+    <span><img alt="" width="30px" height="30px" src="facture/logo.png"></span>
+  </header>
 
-  <table border="0" cellspacing="0" cellpadding="0">
+  <article>
+    <address contenteditable>
+      <p>
+        {{ $detail->client != null ? $detail->client : '' }}
+        <br>
+        {{ $detail->description != null ? $detail->description : '' }}
+      </p>
+    </address>
 
-    <thead>
+    <table class="meta">
       <tr>
-        <th class="no">#</th>
-        <th class="desc">Article</th>
-        <th class="unit">Prix unitaire</th>
-        <th class="qty">Quantité</th>
-        <th class="total">TOTAL</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td class="no">01</td>
-        <td class="desc"><h3>Article 1</h3></td>
-        <td class="unit">$40.00</td>
-        <td class="qty">30</td>
-        <td class="total">$1,200.00</td>
+        <th><span contenteditable>Facture</span></th>
+        <td><span contenteditable>{{ $vente->id_transaction }}</span></td>
       </tr>
       <tr>
-        <td class="no">01</td>
-        <td class="desc"><h3>Article 1</h3></td>
-        <td class="unit">$40.00</td>
-        <td class="qty">30</td>
-        <td class="total">$1,200.00</td>
-      </tr>
-      <tr>
-        <td class="no">01</td>
-        <td class="desc"><h3>Article 1</h3></td>
-        <td class="unit">$40.00</td>
-        <td class="qty">30</td>
-        <td class="total">$1,200.00</td>
-      </tr>
-      <tr>
-        <td class="no">01</td>
-        <td class="desc"><h3>Article 1</h3></td>
-        <td class="unit">$40.00</td>
-        <td class="qty">30</td>
-        <td class="total">$1,200.00</td>
-      </tr>
-      <tr>
-        <td class="no">01</td>
-        <td class="desc"><h3>Article 1</h3></td>
-        <td class="unit">$40.00</td>
-        <td class="qty">30</td>
-        <td class="total">$1,200.00</td>
-      </tr>
-    </tbody>
-
-    <tfoot>
-      <tr>
-        <td colspan="2"></td>
-        <td colspan="2">Total</td>
-        <td>$5,200.00</td>
+        <th><span contenteditable>Date</span></th>
+        <td><span contenteditable>{{ $vente->created_at }}</span></td>
       </tr>
       <!--tr>
-        <td colspan="2"></td>
-        <td colspan="2">TAX 25%</td>
-        <td>$1,300.00</td>
-      </tr>
-      <tr>
-        <td colspan="2"></td>
-        <td colspan="2">GRAND TOTAL</td>
-        <td>$6,500.00</td>
-      </tr-->
-    </tfoot>
-
+      <th><span contenteditable>Total</span></th>
+      <td><span id="prefix" contenteditable>$</span><span>{{ 'total Dhs' }}</span></td>
+    </tr-->
   </table>
-  <div id="thanks">Thank you!</div>
-  <div id="notices">
-    <div>NOTICE:</div>
-    <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>
+
+  <table class="inventory">
+    <thead>
+      <tr>
+        <th> # </th>
+        <th>Article</th>
+        <th>Prix</th>
+        <th>Quantité</th>
+        <th>PU x Quantité</th>
+      </tr>
+    </thead>
+    <tbody>
+      @php
+      $total = 0;
+      @endphp
+      @foreach($articles as $item)
+        <tr>
+          <td>{{ $loop->iteration }}</td>
+          <td>{{ $item->id_article }}</td>
+          <td>{{ $item->prix }} Dhs</td>
+          <td>{{ $item->quantite }}</td>
+          <td>{{ $item->prix*$item->quantite }} Dhs</td>
+        </tr>
+        @php
+        $total += $item->prix*$item->quantite;
+        @endphp
+      @endforeach
+    </tbody>
+  </table>
+
+  <table class="balance">
+    <tr>
+      <th><span contenteditable>Total</span></th>
+      <td>{{ $total }} Dhs</span></td>
+    </tr>
+    <!--tr>
+    <th><span contenteditable>Amount Paid</span></th>
+    <td><span data-prefix>$</span><span contenteditable>0.00</span></td>
+  </tr>
+  <tr>
+  <th><span contenteditable>Balance Due</span></th>
+  <td><span data-prefix>$</span><span>600.00</span></td>
+</tr-->
+</table>
+
+</article>
+
+<aside>
+  <h1><span contenteditable>Additional Notes</span></h1>
+  <div contenteditable>
+    <p>A finance charge of 1.5% will be made on unpaid balances after 30 days.</p>
   </div>
-</main>
-<footer>
-  Lotis Plast
-</footer>
+</aside>
 </body>
 </html>
