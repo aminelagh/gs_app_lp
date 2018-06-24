@@ -59,7 +59,8 @@
                 <thead><tr><th> # </th><th>Date</th><th>Nombre d'article</th><th>Total</th></tr></thead>
                 <tbody>
                   @foreach($ventes as $item)
-                    <tr align="center" ondblclick="window.location.href='{{ route("vente", $item->id_transaction) }}'" title="Double click pour plus de détails" >
+                    <tr align="center" ondblclick="window.location.href='{{ route("vente", $item->id_transaction) }}'"
+                      title="Double click pour plus de détails" {{ $item->valide==false ? "class=danger" : '' }}>
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ formatDateTime($item->created_at) }}</td>
                       <td>{{ $item->nombre_articles }}</td>

@@ -1,10 +1,15 @@
 <?php
 
 use Illuminate\Http\Request;
-//use \App\Models\User;
 use Carbon\Carbon;
 use Cartalyst\Sentinel\Users\EloquentUser as User;
-
+use \App\Models\Article;
+use \App\Models\Categorie;
+use \App\Models\Stock;
+use \App\Models\Transaction;
+use \App\Models\Transaction_article;
+use \App\Models\Unite;
+use \App\Models\Detail;
 
 Route::get('/a', function () {
   $user = User::all();
@@ -14,7 +19,15 @@ Route::get('/a', function () {
 
 
 Route::get('/s',function(){
-  dd(Session::all());
+  //dd(Session::all());
+
+  //$pdf = App::make('dompdf.wrapper');
+  //$pdf->loadHTML('<h1>Test</h1>');
+  //return $pdf->stream();
+
+  $data = [ "no data" ];
+  $pdf = PDF::loadView('pdf.facture')->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
+  return $pdf->stream();
 });
 
 
@@ -43,20 +56,20 @@ Route::group(['middleware' => 'user'], function () {
   Route::get('/stockOUTs', 'StockController@stockOUTs')->name('stockOUTs');
   Route::get('/stockOUT/{id_transaction}', 'StockController@stockOUT')->name('stockOUT');
 
-  Route::get('/ventes', 'StockController@ventes')->name('ventes');
-  Route::get('/vente/{id_transaction}', 'StockController@vente')->name('vente');
-  Route::post('/annulerVente', 'UserController@annulerVente')->name('annulerVente');
+  Route::get('/ventes', 'VenteController@ventes')->name('ventes');
+  Route::get('/vente/{id_transaction}', 'VenteController@vente')->name('vente');
+  Route::post('/annulerVente', 'VenteController@annulerVente')->name('annulerVente');
 
   Route::get('/articles', 'UserController@articles')->name('articles');
 
   Route::get('/categorie/{id_categorie}','UserController@categorie')->name('categorie');
-  Route::post('/addCategorie', 'UserController@addCategorie')->name('addCategorie');
-  Route::post('/updateCategorie', 'UserController@updateCategorie')->name('updateCategorie');
-  Route::post('/deleteCategorie', 'UserController@deleteCategorie')->name('deleteCategorie');
+  Route::post('/addCategorie', 'CategorieController@addCategorie')->name('addCategorie');
+  Route::post('/updateCategorie', 'CategorieController@updateCategorie')->name('updateCategorie');
+  Route::post('/deleteCategorie', 'CategorieController@deleteCategorie')->name('deleteCategorie');
 
-  Route::post('/addArticle', 'UserController@addArticle')->name('addArticle');
-  Route::post('/updateArticle', 'UserController@updateArticle')->name('updateArticle');
-  Route::post('/deleteArticle', 'UserController@deleteArticle')->name('deleteArticle');
+  Route::post('/addArticle', 'ArticleController@addArticle')->name('addArticle');
+  Route::post('/updateArticle', 'ArticleController@updateArticle')->name('updateArticle');
+  Route::post('/deleteArticle', 'ArticleController@deleteArticle')->name('deleteArticle');
 
 
 

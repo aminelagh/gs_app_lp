@@ -1,10 +1,13 @@
 @extends('user.layouts.layout')
 
 @section('contentHeader')
-  <h1>Détail de le vente: <b>{{ formatDateTime($transaction->created_at) }}</b><small></small>
-  </h1>
+  <h1>Détail de le vente: <b>{{ formatDateTime($transaction->created_at) }}</b> <small style="color:#DF0101"><i>{{ $transaction->valide==false ? "Annulée" : '' }}</i></small></h1>
+  <h2></h2>
   <ol class="breadcrumb">
     <li><a href="{{ route('accueil') }}"><i class="fa fa-home"></i> Accueil</a></li>
+    <li><a href="{{ route('stock') }}"><i class="fa fa-cubes"></i> Stock</a></li>
+    <li><a href="{{ route('ventes') }}"><i class="fa fa-history"></i> Historique des ventes</a></li>
+    <li class="active"><i class=""></i> Vente du {{ $transaction->created_at }}</li>
     <li class="active"></li>
   </ol>
 @endsection
@@ -17,6 +20,7 @@
       {{-- *********************************** vente details ************************************* --}}
       <div class="box">
         <div class="box-body">
+
           <div class="row">
             <div class=" col-md-12">
               <table id="venteDetailsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
@@ -48,14 +52,21 @@
               </table>
             </div>
           </div>
+
+          <div class="row">
+
+          </div>
+
         </div>
-        <div class="box-footer" align="right">
-          <button onclick="annulerVenteFunction()" class="btn btn-danger">Annuler la vente</button>
-          <form method="POST" id="formAnnulerVente" action="{{ route('annulerVente') }}">
-            @csrf
-            <input type="hidden" name="id_transaction" value="{{ $transaction->id_transaction }}">
-          </form>
-        </div>
+        @if($transaction->valide)
+          <div class="box-footer" align="right">
+            <button onclick="annulerVenteFunction()" class="btn btn-danger">Annuler la vente</button>
+            <form method="POST" id="formAnnulerVente" action="{{ route('annulerVente') }}">
+              @csrf
+              <input type="hidden" name="id_transaction" value="{{ $transaction->id_transaction }}">
+            </form>
+          </div>
+        @endif
         <script>
         function annulerVenteFunction(){
           var go = confirm('Vos êtes sur le point d\'annuler cette vente.\n voulez-vous continuer?');
@@ -69,6 +80,27 @@
     </div>
 
   </div>
+
+  @if($detail->client != null || $detail->description != null)
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box box-solid">
+          <div class="box-body">
+            <dl>
+              @if($detail->client != null)
+                <dt>Client</dt>
+                <dd>{{ $detail->client }}</dd>
+              @endif
+              @if($detail->description != null)
+                <dt>description</dt>
+                <dd>{{ $detail->description }}</dd>
+              @endif
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
 
 @endsection
 
