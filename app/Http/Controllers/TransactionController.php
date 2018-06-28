@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-
+/*
   public function annulerVente(Request $request){
     dump($request->all());
     $transaction = Transaction::find($request->id_transaction);
@@ -27,5 +27,5 @@ class TransactionController extends Controller
     //$transaction->valide = false;
     $transaction->save();
 
-  }
+  }*/
 }

@@ -105,7 +105,7 @@
 @section('modals')
 
   {{-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ --}}
-  <div class="CRUD StockIN">
+  <div class="CRUD Stock">
 
     {{-- *****************************    add Stock IN   ********************************************** --}}
     <div class="modal fade" id="modalAddStockIN" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -177,7 +177,7 @@
                   <table id="addStockOUTTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                     <thead><tr><th> # </th><th>Code</th><th>Désignation</th><th>Catégorie</th><th>Quantité actuelle</th><th>Quantité à retirer</th></tr></thead>
                     <tbody>
-                      @foreach($stocks as $item)
+                      @foreach($stocksForOut as $item)
                         <tr align="center">
                           <input type="hidden" name="id_article[{{ $item->id_article }}]" value="{{ $item->id_article }}">
 
@@ -207,6 +207,7 @@
         </div>
       </form>
     </div>
+
     <script>
     function calculateTotal(index, last){
       let total = 0;
@@ -233,7 +234,7 @@
     {{-- *****************************    add Vente   ********************************************** --}}
     <div class="modal fade" id="modalAddVente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       {{-- Form add Vente --}}
-      <form name="formAddVente" id="formAddVente" method="POST" action="{{ route('addVente') }}">
+      <form name="formAddVente" id="formAddVente" method="POST" action="{{ route('addVente') }}" target="_blank">
         @csrf
 
         <div class="modal-dialog modal-lg" role="document">
@@ -257,7 +258,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      @foreach($stocks as $item)
+                      @foreach($stocksForOut as $item)
                         <tr align="center">
                           <input type="hidden" name="id_article[{{ $loop->iteration }}]" value="{{ $item->id_article }}">
 
@@ -299,25 +300,22 @@
 
               <div class="row">
 
-                <div class="col-md-2">
+                <div class="col-md-3 col-md-offset-2">
                   {{-- Total --}}
                   <div class="form-group has-feedback">
                     <label>Total</label>
                     <input type="text" class="form-control" id="total" readonly>
                   </div>
                 </div>
-                <div class="col-md-4">
-                  {{-- client --}}
+                <div class="col-md-7">
+                  {{-- id_client --}}
                   <div class="form-group has-feedback">
                     <label>Client</label>
-                    <input type="text" class="form-control" placeholder="Client" name="client" value="{{ old('client') }}">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  {{-- description --}}
-                  <div class="form-group has-feedback">
-                    <label>Description</label>
-                    <input type="text" class="form-control" placeholder="Description" name="description" value="{{ old('description') }}">
+                    <select class="form-control" name="id_client" required>
+                      @foreach ($clients as $item)
+                        <option value="{{ $item->id_client }}">{{ $item->nom }} {{ $item->prenom }}</option>
+                      @endforeach
+                    </select>
                   </div>
                 </div>
 

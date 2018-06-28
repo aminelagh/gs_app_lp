@@ -11,7 +11,7 @@ class Transaction extends Model{
 
   protected $primaryKey = 'id_transaction';
 
-  protected $fillable = ['id_transaction', 'id_type_transaction', 'id_detail', 'valide',
+  protected $fillable = ['id_transaction', 'id_type_transaction', 'id_client','valide',
   'created_at', 'updated_at'];
 
   public static function getNextID(){

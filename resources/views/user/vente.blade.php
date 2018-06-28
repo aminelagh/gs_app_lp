@@ -81,26 +81,19 @@
 
   </div>
 
-  @if($detail->client != null || $detail->description != null)
-    <div class="row">
-      <div class="col-md-12">
-        <div class="box box-solid">
-          <div class="box-body">
-            <dl>
-              @if($detail->client != null)
-                <dt>Client</dt>
-                <dd>{{ $detail->client }}</dd>
-              @endif
-              @if($detail->description != null)
-                <dt>description</dt>
-                <dd>{{ $detail->description }}</dd>
-              @endif
-            </dl>
-          </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-solid">
+        <div class="box-body">
+          <dl>
+            <dt>Client</dt>
+            <dd><a href="{{ route('client',[$client->id_client]) }}">{{ $client->nom }} {{ $client->prenom }}</a></dd>
+
+          </dl>
         </div>
       </div>
     </div>
-  @endif
+  </div>
 
 @endsection
 

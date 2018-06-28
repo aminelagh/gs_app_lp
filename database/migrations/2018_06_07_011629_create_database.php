@@ -56,7 +56,7 @@ class CreateDatabase extends Migration
     Schema::create('transactions', function (Blueprint $table) {
       $table->increments('id_transaction');
       $table->integer('id_type_transaction');
-      $table->integer('id_detail')->nullable();
+      $table->integer('id_client')->nullable();
       $table->boolean('valide')->nullable()->default(true);
       $table->timestamps();
       $table->engine = 'InnoDB';

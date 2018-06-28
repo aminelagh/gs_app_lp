@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableDetail extends Migration
+class Payements extends Migration
 {
   /**
   * Run the migrations.
@@ -13,14 +13,13 @@ class CreateTableDetail extends Migration
   */
   public function up()
   {
-    Schema::create('details', function (Blueprint $table) {
-      $table->increments('id_detail');
-      $table->string('client')->nullable();
-      $table->string('description')->nullable();
+    Schema::create('payements', function (Blueprint $table) {
+      $table->increments('id_payement');
+      $table->integer('id_facture');
+      $table->float('montant');
       $table->timestamps();
       $table->engine = 'InnoDB';
     });
-
   }
 
   /**
@@ -30,6 +29,6 @@ class CreateTableDetail extends Migration
   */
   public function down()
   {
-    Schema::drop('details');
+    Schema::drop('payements');
   }
 }

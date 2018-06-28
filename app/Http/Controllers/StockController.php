@@ -8,8 +8,7 @@ use \App\Models\Categorie;
 use \App\Models\Stock;
 use \App\Models\Transaction;
 use \App\Models\Transaction_article;
-use \App\Models\Unite;
-use \App\Models\Detail;
+use \App\Models\Client;
 use \DB;
 use \Exception;
 
@@ -24,9 +23,12 @@ class StockController extends Controller{
       LEFT JOIN categories c ON c.id_categorie=a.id_categorie
       LEFT JOIN unites u ON u.id_unite=a.id_unite;"
     ));
+
+    //stats
     $stockINsCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=1;"))->count();
     $stockOUTsCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=2;"))->count();
     $ventesCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=3;"))->count();
+
     $stocks = collect(DB::select(
       "SELECT s.*, a.code,a.designation,a.description,a.id_categorie,a.id_unite,a.id_categorie,a.id_unite,
       c.libelle as libelle_categorie, u.libelle as libelle_unite
@@ -37,9 +39,22 @@ class StockController extends Controller{
       ORDER BY s.updated_at asc;"
     ));
 
+    //for stockOuts or ventes
+    $stocksForOut = collect(DB::select(
+      "SELECT s.*, a.code,a.designation,a.description,a.id_categorie,a.id_unite,a.id_categorie,a.id_unite,
+      c.libelle as libelle_categorie, u.libelle as libelle_unite
+      FROM stocks s
+      LEFT JOIN articles a ON a.id_article=s.id_article
+      LEFT JOIN categories c ON c.id_categorie=a.id_categorie
+      LEFT JOIN unites u ON u.id_unite=a.id_unite
+      WHERE s.quantite != 0
+      ORDER BY s.updated_at asc;"
+    ));
+    $clients = Client::all();
+    //dump($stocks);dump($stocksForOut);
     //dump($articles->count()); foreach ($articles as $item) dump($item);
 
-    return view('user.stock')->with(compact('articles', 'stocks', 'stockINsCount', 'stockOUTsCount', 'title', 'ventesCount'));
+    return view('user.stock')->with(compact('articles', 'stocks','stocksForOut' , 'stockINsCount', 'stockOUTsCount', 'title', 'ventesCount', 'clients'));
   }
 
   //Stock in *******************************************************************
@@ -56,43 +71,41 @@ class StockController extends Controller{
         }
       }
       if ($hasData) {
-        //create new Transaction
+        //create new Transaction ...........................
         $id_transaction = Transaction::getNextID();
         $transaction = new Transaction();
         $transaction->id_transaction = $id_transaction;
         $transaction->id_type_transaction = 1;
-        $transaction->id_detail = null;
         $transaction->valide = true;
         $transaction->save();
-
-        //dump($transaction);
+        //.................................................
         foreach ($id_articles as $index => $id_article) {
           if ($quantites[$index] != null && $quantites[$index] > 0) {
 
             $article = Article::find(intval($id_article));
             $stock = Stock::where('id_article', intval($id_article))->get()->first();
 
+            //new Transaction article .........................
             $transaction_article = new Transaction_article();
             $transaction_article->id_transaction = $id_transaction;
             $transaction_article->id_article = intval($id_article);
             $transaction_article->quantite = $quantites[$index];
             $transaction_article->prix = 0;
             $transaction_article->save();
-
-            //dump($transaction_article);
+            //.................................................
+            //check if stock item exist
             if ($stock != null) {
-              //update existing stock $item
+              //update existing stock $item ...........................
               $stock->quantite = $stock->quantite + $quantites[$index];
               $stock->save();
-
-              //echo "update Stock<br>";dump($stock);
+              //.................................................
             } else {
-              //create new stock item
+              //create new stock item ..........................
               $newStock = new Stock();
               $newStock->id_article = intval($id_article);
               $newStock->quantite = $quantites[$index];
               $newStock->save();
-              //echo "new Stock<br>";dump($newStock);
+              //.................................................
             }
           }
         }
@@ -113,12 +126,12 @@ class StockController extends Controller{
   public function stockINs(Request $request){
     $title = "Historique des entrées de stock";
     $stockINs = collect(DB::select(
-      "SELECT t.id_transaction, t.id_detail, t.created_at,
+      "SELECT t.id_transaction, t.created_at,
       count(ta.id_transaction_article) as nombre_articles
       FROM transactions t
       LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
-      WHERE t.id_type_transaction=1
-      GROUP BY t.id_transaction, t.id_detail, t.created_at
+      WHERE t.id_type_transaction=1 AND t.valide!=false
+      GROUP BY t.id_transaction, t.created_at
       ORDER BY t.created_at desc;"
     ));
     //foreach ($stockINs as $item) dump($item);
@@ -168,7 +181,6 @@ class StockController extends Controller{
         $transaction = new Transaction();
         $transaction->id_transaction = $id_transaction;
         $transaction->id_type_transaction = 2; //stock out id_type_transaction
-        $transaction->id_detail = null;
         $transaction->valide = true;
         $transaction->save();
 
@@ -215,12 +227,12 @@ class StockController extends Controller{
   public function stockOUTs(Request $request){
     $title = "Historique des sorties de stock";
     $stockOUTs = collect(DB::select(
-      "SELECT t.id_transaction, t.id_detail, t.created_at,
+      "SELECT t.id_transaction, t.created_at,
       count(ta.id_transaction_article) as nombre_articles
       FROM transactions t
       LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
       WHERE t.id_type_transaction=2
-      GROUP BY t.id_transaction, t.id_detail, t.created_at;"
+      GROUP BY t.id_transaction, t.created_at;"
     ));
     //foreach ($stockINs as $item) dump($item);
     return view('user.stockOUTs')->with(compact('stockOUTs', 'title'));
