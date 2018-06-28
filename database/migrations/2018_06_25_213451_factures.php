@@ -15,7 +15,6 @@ class Factures extends Migration
   {
     Schema::create('factures', function (Blueprint $table) {
       $table->increments('id_facture');
-      $table->integer('id_client');
       $table->boolean('ferme')->default(false);
       $table->timestamps();
       $table->engine = 'InnoDB';

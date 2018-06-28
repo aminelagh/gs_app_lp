@@ -20,4 +20,26 @@ class Transaction extends Model{
     return $result;
   }
 
+  public static function getTotal($id_transaction){
+    $total = collect(DB::select(
+      "SELECT SUM(ta.prix*ta.quantite) as total
+      FROM transactions t
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      WHERE t.id_transaction=$id_transaction;"
+    ));
+    return $total->first()->total;
+  }
+
+  public static function getNombreArticles($id_transaction){
+    $total = collect(DB::select(
+      "SELECT count(ta.id_article) as total
+      FROM transactions t
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      WHERE t.id_transaction=$id_transaction;"
+    ));
+    return $total->first()->total;
+  }
+
+
+
 }

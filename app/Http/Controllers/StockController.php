@@ -21,7 +21,8 @@ class StockController extends Controller{
       FROM articles a
       LEFT JOIN stocks s ON s.id_article=a.id_article
       LEFT JOIN categories c ON c.id_categorie=a.id_categorie
-      LEFT JOIN unites u ON u.id_unite=a.id_unite;"
+      LEFT JOIN unites u ON u.id_unite=a.id_unite
+      ORDER BY s.updated_at asc;"
     ));
 
     //stats
@@ -36,7 +37,7 @@ class StockController extends Controller{
       LEFT JOIN articles a ON a.id_article=s.id_article
       LEFT JOIN categories c ON c.id_categorie=a.id_categorie
       LEFT JOIN unites u ON u.id_unite=a.id_unite
-      ORDER BY s.updated_at asc;"
+      ORDER BY s.updated_at desc;"
     ));
 
     //for stockOuts or ventes

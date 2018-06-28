@@ -234,7 +234,7 @@
     {{-- *****************************    add Vente   ********************************************** --}}
     <div class="modal fade" id="modalAddVente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       {{-- Form add Vente --}}
-      <form name="formAddVente" id="formAddVente" method="POST" action="{{ route('addVente') }}" target="_blank">
+      <form name="formAddVente" id="formAddVente" method="POST" action="{{ route('addVente') }}" {{--target="_blank"--}}>
         @csrf
 
         <div class="modal-dialog modal-lg" role="document">
@@ -307,7 +307,7 @@
                     <input type="text" class="form-control" id="total" readonly>
                   </div>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-5">
                   {{-- id_client --}}
                   <div class="form-group has-feedback">
                     <label>Client</label>
@@ -316,6 +316,12 @@
                         <option value="{{ $item->id_client }}">{{ $item->nom }} {{ $item->prenom }}</option>
                       @endforeach
                     </select>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  {{-- addclient --}}
+                  <div class="form-group has-feedback">
+                    <a href="{{ route('clients') }}" class="btn btn-default" title="Ajouter votre client avant de procéder avec cette vente">mes clients</a>
                   </div>
                 </div>
 
@@ -352,6 +358,7 @@
       paging: true,
       //"autoWidth": true,
       info: false,
+      order: [[ 0,'asc' ]],
       stateSave: false,
       columnDefs: [
         { targets: 00, type: "num", visible: false, searchable: false, orderable: true},

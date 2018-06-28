@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableAlerts extends Migration
+class VenteFacture extends Migration
 {
   /**
   * Run the migrations.
@@ -13,15 +13,12 @@ class CreateTableAlerts extends Migration
   */
   public function up()
   {
-    Schema::create('alerts', function (Blueprint $table) {
-      $table->increments('id_alert');
-      $table->integer('id_article');
-      $table->float('quantite_min',8,2);
-      $table->timestamps();
-      $table->engine = 'InnoDB';
+    Schema::create('vente_facture', function (Blueprint $table) {
+      $table->increments('id_vente_facture');
+      $table->string('id_transaction');
+      $table->string('id_facture');
     });
   }
-
   /**
   * Reverse the migrations.
   *
@@ -29,6 +26,6 @@ class CreateTableAlerts extends Migration
   */
   public function down()
   {
-    Schema::drop('alerts');
+    Schema::drop('vente_facture');
   }
 }

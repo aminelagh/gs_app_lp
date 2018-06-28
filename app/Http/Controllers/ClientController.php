@@ -6,23 +6,21 @@ use Illuminate\Http\Request;
 use \App\Models\Client;
 use \App\Models\Facture;
 use \App\Models\payement;
+use \App\Models\Transaction;
+use \App\Modals\Vente_facture;
 use \DB;
 use \Exception;
 
 class ClientController extends Controller
 {
+  // list clients --------------------------------------------------------------
   public function clients(Request $request) {
     $title = "Clients";
-    //$clients = Client::orderBy('created_at','desc')->take(2)->get();
     $clients = Client::orderBy('created_at','desc')->get();
-    //$stockINsCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=1;"))->count();
-    //$stockOUTsCount = collect(DB::select("SELECT *FROM transactions s WHERE id_type_transaction=2;"))->count();
-
-    //dump($articles->count()); foreach ($articles as $item) dump($item);
-
     return view('user.clients')->with(compact('clients'));//->with('alert_info',"Test");
   }
 
+  //client dash ----------------------------------------------------------------
   public function client($id_client, Request $request) {
     $client = Client::find($id_client);
     if($client == null){
@@ -30,14 +28,67 @@ class ClientController extends Controller
     }
 
     $title = $client->nom." ".$client->prenom;
-    $factures = Facture::whereIdClient($id_client)->get();
-    $payements = collect(DB::select("SELECT * FROM payements p WHERE id_facture in (SELECT id_facture FROM factures WHERE id_client=$id_client);"));
+    $ventes = collect(DB::select(
+      "SELECT t.id_transaction,t.created_at, SUM(ta.prix*ta.quantite) as total
+      FROM transactions t
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      WHERE t.id_client=$id_client AND t.id_transaction not in (select id_transaction FROM vente_facture)
+      GROUP BY t.id_transaction,t.created_at;"
+    ));
 
-    //dump($articles->count()); foreach ($articles as $item) dump($item);
+    $facturesOpen = collect(DB::select(
+      "SELECT f.*
+      FROM factures f
+      LEFT JOIN vente_facture vf ON vf.id_facture=f.id_facture
+      LEFT JOIN transactions t ON t.id_transaction=vf.id_transaction
+      WHERE t.id_client=$id_client AND f.ferme!=true;"
+    ));
+    $payements = collect(DB::select("SELECT * FROM payements p;"));
 
-    return view('user.client')->with(compact('client','factures','payements'));//->with('alert_info',"Test");
+    return view('user.client')->with(compact('client','factures','payements','ventes','facturesOpen'));
   }
+  //----------------------------------------------------------------------------
 
+  //add vente to facture (create Vente factures) -------------------------------
+  public function addFacture(Request $request){
+    try{
+      $id_transactions = $request->get('id_transaction');
+      $checked = $request->get('checked');
+      dump($id_transactions);
+      dump($checked);
+
+      foreach($id_transactions as $index => $id_transaction){
+        if(isset($checked[$index])){
+          $transaction = Transaction::find($id_transaction);
+
+          //create facture ......................
+          $id_facture = Facture::getNextID();
+          $facture = new Facture();
+          $facture->id_facture = $id_facture;
+          $facture->ferme = false;
+          $facture->save();
+          //.....................................
+
+          // create vente_facture ...............
+          $vente_facture = new Vente_facture();
+          $vente_facture->id_transaction = $id_transaction;
+          $vente_facture->id_facture = $id_facture;
+          $vente_facture->save();
+          //.....................................
+
+        }
+      }
+    }catch(Exception $e){
+      return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de la facture.<br>Message d'erreur: ".$e->getMessage().".");
+    }
+    return redirect()->back()->with('alert_success',"Facture créée");
+  }
+  //----------------------------------------------------------------------------
+
+  public function detailsVente($id_transaction){
+    return "Details $id_transaction";
+
+  }
 
 
   //CRUD Client @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

@@ -10,14 +10,72 @@
 @endsection
 
 @section('content')
+  <script>
+  function openVenteDetails(id_transaction) {
+    var venteDetails = window.open("../detailsVente/"+id_transaction, "", "resizable=no,status=no,titlebar=no,width=500,height=300");
+  }
+  </script>
 
   <div class="row">
 
-    <div class="col-md-8">
-      {{-- *********************************** Factures ************************************* --}}
+    <div class="col-md-5">
+      {{-- *********************************** ventes ************************************* --}}
+      {{-- Form create facture --}}
+      <form name="formAddFacture" id="formAddFacture" method="POST" action="{{ route('addFacture') }}">
+        @csrf
+
+        <div class="box">
+          <div class="box-header with-border">
+            <h3 class="box-title" title="Ventes du client qui ne sont pas encore dans des factures">Ventes</h3>
+            <div class="box-tools pull-right">
+              <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
+              <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+              <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class=" col-md-12">
+
+                <table id="facturesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                  <thead><tr><th> # </th><th>Date</th><th>Total</th><th>Outils</th></tr></thead>
+                  <tbody>
+                    @foreach($ventes as $item)
+                      <tr align="center" ondblclick="openVenteDetails({{ $item->id_transaction }})" title="Double click pour plus de détails" >
+
+                        <input type="hidden" name="id_transaction[{{ $loop->iteration }}]" value="{{ $item->id_transaction }}">
+
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ formatDateTime($item->created_at) }}</td>
+                        <td>{{ $item->total }} Dhs</td>
+                        <td align="center">
+                          <label>
+                            <input type="checkbox" name="checked[{{ $loop->iteration }}]" class="minimal"/>
+                          </label>
+                        </td>
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+          </div>
+          <div class="box-footer" align="right">
+            <input type="submit" class="btn btn-success" value="Valider" name="submitAddFacture" form="formAddFacture">
+          </div>
+        </div>
+
+      </form>
+      {{-- *********************************** ventes ************************************* --}}
+    </div>
+
+
+    <div class="col-md-4">
+      {{-- *********************************** Factures OPEN ************************************* --}}
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">Factures non payées <span class="badge badge-succuess badge-pill" title="Factures non payées"> {{ $factures->count() }}</span></h3>
+          <h3 class="box-title">Factures non payées <span class="badge badge-succuess badge-pill" title="Factures non payées"> {{ $facturesOpen->count() }}</span></h3>
           <div class="box-tools pull-right">
             <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouvelle facture</button>
             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
@@ -27,17 +85,14 @@
         <div class="box-body">
           <div class="row">
             <div class="col-md-12">
-              <table id="facturesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+              <table id="facturesOpenTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                 <thead><tr><th> # </th><th>Date</th><th>Outils</th></tr></thead>
                 <tbody>
-                  @foreach($factures as $item)
-                    <tr align="center" ondblclick="window.location.href='{{ route("client", $item->id_facture) }}'" title="Double click pour plus de détails" >
+                  @foreach($facturesOpen as $item)
+                    <tr align="center" title="Double click pour plus de détails" >
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ formatDateTime($item->create_at) }}</td>
                       <td align="center">
-                        <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateClient"
-                        onclick='updateClientFunction({{ $item->id_client }},"{{ $item->nom }}","{{ $item->prenom }}","{{ $item->email }}","{{ $item->tel }}","{{ $item->description }}");' title="Modifier" ></i>
-                        <i class="glyphicon glyphicon-trash" onclick="deleteClientFunction({{ $item->id_client }},'{{ $item->nom }}','{{ $item->prenom }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
                       </td>
                     </tr>
                   @endforeach
@@ -48,10 +103,12 @@
         </div>
         <div class="box-footer"></div>
       </div>
-      {{-- *********************************** factures ************************************* --}}
+      {{-- *********************************** factures OPEN ************************************* --}}
     </div>
 
-    <div class="col-md-4">
+
+
+    <div class="col-md-5">
       {{-- *********************************** Payements ************************************* --}}
       <div class="box">
         <div class="box-header with-border">
@@ -65,7 +122,7 @@
         <div class="box-body">
           <div class="row">
             <div class=" col-md-12">
-              <table id="facturesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+              <table id="payementsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
                 <thead><tr><th> # </th><th>Date</th><th>Montant</th><th>Outils</th></tr></thead>
                 <tbody>
                   @foreach($payements as $item)
@@ -244,21 +301,42 @@
   <script>
   $(document).ready(function(){
 
-    $('#facturesTable').DataTable({
+
+    //add stock out ***********************************************************************
+    var tableOUT = $('#facturesTable').DataTable({
       dom: '<lf<Bt>ip>',
-      info: true,
-      order: [[ 0,'asc' ]],
       lengthMenu: [
-        [ 5, 10, 25, 50, -1 ],
-        [ '5', '10', '25', '50', 'Tout' ]
+        [ 10, 25, 50, -1 ],
+        [ '10', '25', '50', 'Tout' ]
       ],
+      searching: true,
+      paging: true,
+      //"autoWidth": true,
+      info: false,
+      stateSave: false,
       columnDefs: [
-        { targets: 0, visible: false, orderable: true, searchable: true},
-        //{ targets: 0, visible: true, type: "num"},
-        //{ targets: 1, visible: true},
-      ],
-      //order: [[ 0, "asc" ]],
+        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+        { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
+      ]
     });
+
+    // Handle form submission event (enable the entire table to be submitted)
+    $('#formAddFacture').on('submit', function(e){
+      var form = this;
+      // Encode a set of form elements from all pages as an array of names and values
+      var params = tableOUT.$('input,select,text,checkbox, number').serializeArray();
+      // Iterate over all form elements
+      $.each(params, function(){
+        // If element doesn't exist in DOM
+        if(!$.contains(document, form[this.name])){
+          // Create a hidden element
+          $(form).append(
+            $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
+          );
+        }
+      });
+    });
+    //*************************************************************************************
 
   });
   </script>

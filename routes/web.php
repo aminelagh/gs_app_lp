@@ -9,6 +9,8 @@ use \App\Models\Stock;
 use \App\Models\Transaction;
 use \App\Models\Transaction_article;
 use \App\Models\Unite;
+use \App\Modals\Vente_facture;
+use \App\Models\Facture;
 use \App\Models\Detail;
 
 Route::get('/a', function () {
@@ -21,25 +23,10 @@ Route::get('/a', function () {
 Route::get('/s',function(){
   //dd(Session::all());
 
-  //$pdf = App::make('dompdf.wrapper');
-  //$pdf->loadHTML('<h1>Test</h1>');
-  //return $pdf->stream();
+  $vente_facture = new Vente_facture();
+  $facture = new Facture();
 
-  $data = [ "no data" ];
-  //$pdf = PDF::loadView('pdf.facture')->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
-  //return $pdf->stream();
-
-  $vente = Transaction::find(42);
-  $detail = Detail::find(1);
-  $articles = Transaction_article::whereIdTransaction(42)->get();
-
-  //$data = [ 'vente' => $vente, 'detail' => $detail, 'articles' => $articles ];
-  $pdf = PDF::loadView('pdf.facture', compact('articles','vente','detail') )->setPaper('a4', 'portrait');//->setPaper('a4', 'landscape');
-
-  //return Response::download('logo.png', 'facture.pdf', ['location' => '/login']);
-  $pdf->download('facture.pdf');
-  //$pdf->stream();
-  //return redirect()->route('login');
+  return Transaction::getNombreArticles(4);
 
 });
 
@@ -99,6 +86,13 @@ Route::group(['middleware' => 'user'], function () {
   Route::post('/updatePayement', 'ClientController@updatePayement')->name('updatePayement');
   Route::post('/deletePayement', 'ClientController@deletePayement')->name('deletePayement');
 
+  //CRUD Facture
+  Route::post('/addFacture', 'ClientController@addFacture')->name('addFacture');
+  Route::post('/updateFacture', 'ClientController@updateFacture')->name('updateFacture');
+  Route::post('/deleteFacture', 'ClientController@deleteFacture')->name('deleteFacture');
+
+  //small window
+  Route::get('/detailsVente/{id_transaction}','ClientController@detailsVente')->name('detailsVente');
 });
 
 
