@@ -17,6 +17,8 @@ class VenteFacture extends Migration
       $table->increments('id_vente_facture');
       $table->string('id_transaction');
       $table->string('id_facture');
+      $table->timestamps();
+      $table->engine = 'InnoDB';
     });
   }
   /**

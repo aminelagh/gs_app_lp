@@ -12,13 +12,13 @@
 @section('content')
   <script>
   function openVenteDetails(id_transaction) {
-    var venteDetails = window.open("../detailsVente/"+id_transaction, "", "resizable=no,status=no,titlebar=no,width=500,height=300");
+    var venteDetails = window.open("../detailsVente/"+id_transaction, "", "resizable=no,status=no,titlebar=no,width=800,height=500");
   }
   </script>
 
   <div class="row">
 
-    <div class="col-md-5">
+    <div class="col-md-6">
       {{-- *********************************** ventes ************************************* --}}
       {{-- Form create facture --}}
       <form name="formAddFacture" id="formAddFacture" method="POST" action="{{ route('addFacture') }}">
@@ -37,8 +37,8 @@
             <div class="row">
               <div class=" col-md-12">
 
-                <table id="facturesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                  <thead><tr><th> # </th><th>Date</th><th>Total</th><th>Outils</th></tr></thead>
+                <table id="ventesTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                  <thead><tr><th> # </th><th>Date</th><th>Nombre d'articles</th><th>Total</th><th>Outils</th></tr></thead>
                   <tbody>
                     @foreach($ventes as $item)
                       <tr align="center" ondblclick="openVenteDetails({{ $item->id_transaction }})" title="Double click pour plus de détails" >
@@ -47,10 +47,11 @@
 
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ formatDateTime($item->created_at) }}</td>
+                        <td>{{ $item->nombre_articles }}</td>
                         <td>{{ $item->total }} Dhs</td>
                         <td align="center">
                           <label>
-                            <input type="checkbox" name="checked[{{ $loop->iteration }}]" class="minimal"/>
+                            <input type="checkbox" name="checked[{{ $loop->iteration }}]" value="{{ $loop->iteration }}" class="minimal"/>
                           </label>
                         </td>
                       </tr>
@@ -71,81 +72,88 @@
     </div>
 
 
-    <div class="col-md-4">
-      {{-- *********************************** Factures OPEN ************************************* --}}
-      <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Factures non payées <span class="badge badge-succuess badge-pill" title="Factures non payées"> {{ $facturesOpen->count() }}</span></h3>
-          <div class="box-tools pull-right">
-            <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouvelle facture</button>
-            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-          </div>
-        </div>
-        <div class="box-body">
-          <div class="row">
-            <div class="col-md-12">
-              <table id="facturesOpenTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th> # </th><th>Date</th><th>Outils</th></tr></thead>
-                <tbody>
-                  @foreach($facturesOpen as $item)
-                    <tr align="center" title="Double click pour plus de détails" >
-                      <td>{{ $loop->iteration }}</td>
-                      <td>{{ formatDateTime($item->create_at) }}</td>
-                      <td align="center">
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
+    <div class="col-md-6">
+
+      <div class="row">
+        <div class="col-sm-12">
+          {{-- *********************************** Factures OPEN ************************************* --}}
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Factures non payées <span class="badge badge-succuess badge-pill" title="Factures non payées"> {{ $facturesOpen->count() }}</span></h3>
+              <div class="box-tools pull-right">
+                <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouvelle facture</button>
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
             </div>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <table id="facturesOpenTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead><tr><th> # </th><th>Date</th><th>Outils</th></tr></thead>
+                    <tbody>
+                      @foreach($facturesOpen as $item)
+                        <tr align="center" title="Double click pour plus de détails" >
+                          <td>{{ $loop->iteration }}</td>
+                          <td>{{ formatDateTime($item->created_at) }}</td>
+                          <td align="center">
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="box-footer"></div>
           </div>
+          {{-- *********************************** factures OPEN ************************************* --}}
         </div>
-        <div class="box-footer"></div>
       </div>
-      {{-- *********************************** factures OPEN ************************************* --}}
+
+      <div class="row">
+        <div class="col-sm-12">
+          {{-- *********************************** Payements ************************************* --}}
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Payements</h3>
+              <div class="box-tools pull-right">
+                <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="row">
+                <div class=" col-md-12">
+                  <table id="payementsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead><tr><th> # </th><th>Date</th><th>Montant</th><th>Outils</th></tr></thead>
+                    <tbody>
+                      @foreach($payements as $item)
+                        <tr align="center" ondblclick="window.location.href='{{ route("client", $item->id_facture) }}'" title="Double click pour plus de détails" >
+                          <td>{{ $loop->iteration }}</td>
+                          <td>{{ formatDateTime($item->create_at) }}</td>
+                          <td><a href="mailto: {{ $item->email }}">{{ $item->email }}</a></td>
+                          <td align="center">
+                            <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateClient"
+                            onclick='updateClientFunction({{ $item->id_client }},"{{ $item->nom }}","{{ $item->prenom }}","{{ $item->email }}","{{ $item->tel }}","{{ $item->description }}");' title="Modifier" ></i>
+                            <i class="glyphicon glyphicon-trash" onclick="deleteClientFunction({{ $item->id_client }},'{{ $item->nom }}','{{ $item->prenom }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="box-footer"></div>
+          </div>
+          {{-- *********************************** Payements ************************************* --}}
+        </div>
+      </div>
+
     </div>
 
-
-
-    <div class="col-md-5">
-      {{-- *********************************** Payements ************************************* --}}
-      <div class="box">
-        <div class="box-header with-border">
-          <h3 class="box-title">Payements</h3>
-          <div class="box-tools pull-right">
-            <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
-            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-          </div>
-        </div>
-        <div class="box-body">
-          <div class="row">
-            <div class=" col-md-12">
-              <table id="payementsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                <thead><tr><th> # </th><th>Date</th><th>Montant</th><th>Outils</th></tr></thead>
-                <tbody>
-                  @foreach($payements as $item)
-                    <tr align="center" ondblclick="window.location.href='{{ route("client", $item->id_facture) }}'" title="Double click pour plus de détails" >
-                      <td>{{ $loop->iteration }}</td>
-                      <td>{{ formatDateTime($item->create_at) }}</td>
-                      <td><a href="mailto: {{ $item->email }}">{{ $item->email }}</a></td>
-                      <td align="center">
-                        <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateClient"
-                        onclick='updateClientFunction({{ $item->id_client }},"{{ $item->nom }}","{{ $item->prenom }}","{{ $item->email }}","{{ $item->tel }}","{{ $item->description }}");' title="Modifier" ></i>
-                        <i class="glyphicon glyphicon-trash" onclick="deleteClientFunction({{ $item->id_client }},'{{ $item->nom }}','{{ $item->prenom }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="box-footer"></div>
-      </div>
-      {{-- *********************************** Payements ************************************* --}}
-    </div>
 
   </div>
 
@@ -302,8 +310,8 @@
   $(document).ready(function(){
 
 
-    //add stock out ***********************************************************************
-    var tableOUT = $('#facturesTable').DataTable({
+    //table ventes du client / create Facture *************************************
+    var ventesTable = $('#ventesTable').DataTable({
       dom: '<lf<Bt>ip>',
       lengthMenu: [
         [ 10, 25, 50, -1 ],
@@ -312,7 +320,8 @@
       searching: true,
       paging: true,
       //"autoWidth": true,
-      info: false,
+      info: true,
+      order: [[0, "asc"]],
       stateSave: false,
       columnDefs: [
         { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
@@ -324,7 +333,7 @@
     $('#formAddFacture').on('submit', function(e){
       var form = this;
       // Encode a set of form elements from all pages as an array of names and values
-      var params = tableOUT.$('input,select,text,checkbox, number').serializeArray();
+      var params = ventesTable.$('input,select,text,checkbox, number').serializeArray();
       // Iterate over all form elements
       $.each(params, function(){
         // If element doesn't exist in DOM
@@ -336,6 +345,43 @@
         }
       });
     });
+    //*************************************************************************************
+
+    //facturesOpen ***********************************************************************
+    var facturesTable = $('#facturesTable').DataTable({
+      dom: '<lf<Bt>ip>',
+      lengthMenu: [
+        [ 10, 25, 50, -1 ],
+        [ '10', '25', '50', 'Tout' ]
+      ],
+      searching: true,
+      paging: true,
+      //"autoWidth": true,
+      info: true,
+      order: [[0, "asc"]],
+      stateSave: false,
+      columnDefs: [
+        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+        { targets: 01, type: "string", visible: true, searchable: true, orderable: true}
+      ]
+    });
+
+    // Handle form submission event (enable the entire table to be submitted)
+  /*  $('#formAddFacture').on('submit', function(e){
+      var form = this;
+      // Encode a set of form elements from all pages as an array of names and values
+      var params = facturesTable.$('input,select,text,checkbox, number').serializeArray();
+      // Iterate over all form elements
+      $.each(params, function(){
+        // If element doesn't exist in DOM
+        if(!$.contains(document, form[this.name])){
+          // Create a hidden element
+          $(form).append(
+            $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
+          );
+        }
+      });
+    });*/
     //*************************************************************************************
 
   });

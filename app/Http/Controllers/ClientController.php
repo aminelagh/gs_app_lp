@@ -7,7 +7,8 @@ use \App\Models\Client;
 use \App\Models\Facture;
 use \App\Models\payement;
 use \App\Models\Transaction;
-use \App\Modals\Vente_facture;
+use \App\Models\Vente_facture;
+use \App\Models\Transaction_article;
 use \DB;
 use \Exception;
 
@@ -29,7 +30,7 @@ class ClientController extends Controller
 
     $title = $client->nom." ".$client->prenom;
     $ventes = collect(DB::select(
-      "SELECT t.id_transaction,t.created_at, SUM(ta.prix*ta.quantite) as total
+      "SELECT t.id_transaction,t.created_at, COUNT(ta.id_article) as nombre_articles, SUM(ta.prix*ta.quantite) as total
       FROM transactions t
       LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
       WHERE t.id_client=$id_client AND t.id_transaction not in (select id_transaction FROM vente_facture)
@@ -52,13 +53,12 @@ class ClientController extends Controller
   //add vente to facture (create Vente factures) -------------------------------
   public function addFacture(Request $request){
     try{
+      $hasData = false;
       $id_transactions = $request->get('id_transaction');
       $checked = $request->get('checked');
-      dump($id_transactions);
-      dump($checked);
 
       foreach($id_transactions as $index => $id_transaction){
-        if(isset($checked[$index])){
+        if(isset($checked[$index]) && $checked[$index] == $index){
           $transaction = Transaction::find($id_transaction);
 
           //create facture ......................
@@ -75,8 +75,10 @@ class ClientController extends Controller
           $vente_facture->id_facture = $id_facture;
           $vente_facture->save();
           //.....................................
-
         }
+      }
+      if(!$hasData){
+        return redirect()->back()->with('alert_warning',"Veuillez choisir au moins une vente afin de creer la facture.");
       }
     }catch(Exception $e){
       return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de la facture.<br>Message d'erreur: ".$e->getMessage().".");
@@ -86,7 +88,19 @@ class ClientController extends Controller
   //----------------------------------------------------------------------------
 
   public function detailsVente($id_transaction){
-    return "Details $id_transaction";
+    $transaction = Transaction::find($id_transaction);
+    $title = "Ventes: $transaction->created_at";
+    $transaction_articles = collect(DB::select(
+      "SELECT ta.*, a.code,a.designation,a.description,
+      c.libelle as libelle_categorie,c.id_categorie, u.libelle as libelle_unite
+      FROM transaction_articles ta
+      LEFT JOIN articles a ON a.id_article=ta.id_article
+      LEFT JOIN categories c ON c.id_categorie=a.id_categorie
+      LEFT JOIN unites u ON u.id_unite=a.id_unite
+      WHERE ta.id_transaction=$id_transaction;"
+    ));
+
+    return view('user.detailsVente')->with(compact('transaction','transaction_articles'));//->with('alert_info',"Test");
 
   }
 
