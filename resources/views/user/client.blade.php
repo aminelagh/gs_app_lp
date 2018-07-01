@@ -23,7 +23,6 @@
       {{-- Form create facture --}}
       <form name="formAddFacture" id="formAddFacture" method="POST" action="{{ route('addFacture') }}">
         @csrf
-
         <div class="box">
           <div class="box-header with-border">
             <h3 class="box-title" title="Ventes du client qui ne sont pas encore dans des factures">Ventes</h3>
@@ -66,7 +65,6 @@
             <input type="submit" class="btn btn-success" value="Valider" name="submitAddFacture" form="formAddFacture">
           </div>
         </div>
-
       </form>
       {{-- *********************************** ventes ************************************* --}}
     </div>
@@ -90,12 +88,16 @@
               <div class="row">
                 <div class="col-md-12">
                   <table id="facturesOpenTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                    <thead><tr><th> # </th><th>Date</th><th>Outils</th></tr></thead>
+                    <thead><tr><th> # </th><th>Date</th><th>Nombre de ventes</th><th>Total</th><th>Payé</th><th>Reste</th><th>Outils</th></tr></thead>
                     <tbody>
                       @foreach($facturesOpen as $item)
                         <tr align="center" title="Double click pour plus de détails" >
                           <td>{{ $loop->iteration }}</td>
                           <td>{{ formatDateTime($item->created_at) }}</td>
+                          <td>{{ $item->nombre_ventes }}</td>
+                          <td>{{ $item->montant }} Dhs</td>
+                          <td>{{ $item->paye or 0 }} Dhs</td>
+                          <td><font color="#DF0101">{{ $item->montant-$item->paye }} Dhs</font></td>
                           <td align="center">
                           </td>
                         </tr>
@@ -113,49 +115,49 @@
 
       <div class="row">
         <div class="col-sm-12">
-          {{-- *********************************** Payements ************************************* --}}
+          {{-- *********************************** Payements ************************************* --}
           <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Payements</h3>
-              <div class="box-tools pull-right">
-                <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
-                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <div class="box-body">
-              <div class="row">
-                <div class=" col-md-12">
-                  <table id="payementsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                    <thead><tr><th> # </th><th>Date</th><th>Montant</th><th>Outils</th></tr></thead>
-                    <tbody>
-                      @foreach($payements as $item)
-                        <tr align="center" ondblclick="window.location.href='{{ route("client", $item->id_facture) }}'" title="Double click pour plus de détails" >
-                          <td>{{ $loop->iteration }}</td>
-                          <td>{{ formatDateTime($item->create_at) }}</td>
-                          <td><a href="mailto: {{ $item->email }}">{{ $item->email }}</a></td>
-                          <td align="center">
-                            <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateClient"
-                            onclick='updateClientFunction({{ $item->id_client }},"{{ $item->nom }}","{{ $item->prenom }}","{{ $item->email }}","{{ $item->tel }}","{{ $item->description }}");' title="Modifier" ></i>
-                            <i class="glyphicon glyphicon-trash" onclick="deleteClientFunction({{ $item->id_client }},'{{ $item->nom }}','{{ $item->prenom }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
-                          </td>
-                        </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="box-footer"></div>
-          </div>
-          {{-- *********************************** Payements ************************************* --}}
+          <div class="box-header with-border">
+          <h3 class="box-title">Payements</h3>
+          <div class="box-tools pull-right">
+          <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
         </div>
       </div>
+      <div class="box-body">
+      <div class="row">
+      <div class=" col-md-12">
+      <table id="payementsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+      <thead><tr><th> # </th><th>Date</th><th>Montant</th><th>Outils</th></tr></thead>
+      <tbody>
+      @foreach($payements as $item)
+      <tr align="center" ondblclick="window.location.href='{{ route("client", $item->id_facture) }}'" title="Double click pour plus de détails" >
+      <td>{{ $loop->iteration }}</td>
+      <td>{{ formatDateTime($item->created_at) }}</td>
+      <td><a href="mailto: {{ $item->email }}">{{ $item->email }}</a></td>
+      <td align="center">
+      <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateClient"
+      onclick='updateClientFunction({{ $item->id_client }},"{{ $item->nom }}","{{ $item->prenom }}","{{ $item->email }}","{{ $item->tel }}","{{ $item->description }}");' title="Modifier" ></i>
+      <i class="glyphicon glyphicon-trash" onclick="deleteClientFunction({{ $item->id_client }},'{{ $item->nom }}','{{ $item->prenom }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
+    </td>
+  </tr>
+@endforeach
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="box-footer"></div>
+</div>
+{{-- *********************************** Payements ************************************* --}}
+</div>
+</div>
 
-    </div>
+</div>
 
 
-  </div>
+</div>
 
 @endsection
 
@@ -348,7 +350,7 @@
     //*************************************************************************************
 
     //facturesOpen ***********************************************************************
-    var facturesTable = $('#facturesTable').DataTable({
+    var facturesOpenTable = $('#facturesOpenTable').DataTable({
       dom: '<lf<Bt>ip>',
       lengthMenu: [
         [ 10, 25, 50, -1 ],
@@ -367,23 +369,23 @@
     });
 
     // Handle form submission event (enable the entire table to be submitted)
-  /*  $('#formAddFacture').on('submit', function(e){
-      var form = this;
-      // Encode a set of form elements from all pages as an array of names and values
-      var params = facturesTable.$('input,select,text,checkbox, number').serializeArray();
-      // Iterate over all form elements
-      $.each(params, function(){
-        // If element doesn't exist in DOM
-        if(!$.contains(document, form[this.name])){
-          // Create a hidden element
-          $(form).append(
-            $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
-          );
-        }
-      });
-    });*/
-    //*************************************************************************************
+    /*  $('#formAddFacture').on('submit', function(e){
+    var form = this;
+    // Encode a set of form elements from all pages as an array of names and values
+    var params = facturesOpenTable.$('input,select,text,checkbox, number').serializeArray();
+    // Iterate over all form elements
+    $.each(params, function(){
+    // If element doesn't exist in DOM
+    if(!$.contains(document, form[this.name])){
+    // Create a hidden element
+    $(form).append(
+    $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
+  );
+}
+});
+});*/
+//*************************************************************************************
 
-  });
-  </script>
+});
+</script>
 @endsection

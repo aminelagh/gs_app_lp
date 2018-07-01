@@ -38,12 +38,17 @@ class ClientController extends Controller
     ));
 
     $facturesOpen = collect(DB::select(
-      "SELECT f.*
+      "SELECT f.id_facture, f.created_at, f.ferme, COUNT(DISTINCT vf.id_vente_facture) as nombre_ventes, SUM(ta.quantite*ta.prix) as montant, SUM(DISTINCT p.montant) as paye
       FROM factures f
       LEFT JOIN vente_facture vf ON vf.id_facture=f.id_facture
       LEFT JOIN transactions t ON t.id_transaction=vf.id_transaction
-      WHERE t.id_client=$id_client AND f.ferme!=true;"
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      LEFT JOIN payements p ON p.id_facture=f.id_facture
+      WHERE t.id_client=$id_client AND f.ferme!=true
+      GROUP BY f.id_facture, f.created_at, f.ferme;"
     ));
+    //foreach ($facturesOpen as $item ) dump($item);
+
     $payements = collect(DB::select("SELECT * FROM payements p;"));
 
     return view('user.client')->with(compact('client','factures','payements','ventes','facturesOpen'));
@@ -57,18 +62,27 @@ class ClientController extends Controller
       $id_transactions = $request->get('id_transaction');
       $checked = $request->get('checked');
 
+      //check if there is data to handel
       foreach($id_transactions as $index => $id_transaction){
         if(isset($checked[$index]) && $checked[$index] == $index){
+          $hasData = true;
+        }
+      }
+      if(!$hasData){
+        return redirect()->back()->with('alert_warning',"Veuillez choisir au moins une vente afin de creer la facture.");
+      }
+
+      //create facture ......................
+      $id_facture = Facture::getNextID();
+      $facture = new Facture();
+      $facture->id_facture = $id_facture;
+      $facture->ferme = false;
+      $facture->save();
+      //.....................................
+      foreach($id_transactions as $index => $id_transaction){
+        if(isset($checked[$index]) && $checked[$index] == $index){
+          $hasData = true;
           $transaction = Transaction::find($id_transaction);
-
-          //create facture ......................
-          $id_facture = Facture::getNextID();
-          $facture = new Facture();
-          $facture->id_facture = $id_facture;
-          $facture->ferme = false;
-          $facture->save();
-          //.....................................
-
           // create vente_facture ...............
           $vente_facture = new Vente_facture();
           $vente_facture->id_transaction = $id_transaction;
@@ -77,9 +91,8 @@ class ClientController extends Controller
           //.....................................
         }
       }
-      if(!$hasData){
-        return redirect()->back()->with('alert_warning',"Veuillez choisir au moins une vente afin de creer la facture.");
-      }
+
+
     }catch(Exception $e){
       return redirect()->back()->withInput()->with('alert_danger',"Erreur de création de la facture.<br>Message d'erreur: ".$e->getMessage().".");
     }
