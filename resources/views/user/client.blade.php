@@ -25,9 +25,9 @@
         @csrf
         <div class="box">
           <div class="box-header with-border">
-            <h3 class="box-title" title="Ventes du client qui ne sont pas encore dans des factures">Ventes</h3>
+            <h3 class="box-title" title="Ventes du client qui ne sont pas encore dans des factures">nouvelles ventes</h3>
             <div class="box-tools pull-right">
-              <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
+              <button data-toggle="modal" href="#modalAddVente" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouvelle vente</button>
               <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
               <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
             </div>
@@ -71,93 +71,94 @@
 
 
     <div class="col-md-6">
-
-      <div class="row">
-        <div class="col-sm-12">
-          {{-- *********************************** Factures OPEN ************************************* --}}
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Factures non payées <span class="badge badge-succuess badge-pill" title="Factures non payées"> {{ $facturesOpen->count() }}</span></h3>
-              <div class="box-tools pull-right">
-                <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouvelle facture</button>
-                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-12">
-                  <table id="facturesOpenTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-                    <thead><tr><th> # </th><th>Date</th><th>Nombre de ventes</th><th>Total</th><th>Payé</th><th>Reste</th><th>Outils</th></tr></thead>
-                    <tbody>
-                      @foreach($facturesOpen as $item)
-                        <tr align="center" title="Double click pour plus de détails" >
-                          <td>{{ $loop->iteration }}</td>
-                          <td>{{ formatDateTime($item->created_at) }}</td>
-                          <td>{{ $item->nombre_ventes }}</td>
-                          <td>{{ $item->montant }} Dhs</td>
-                          <td>{{ $item->paye or 0 }} Dhs</td>
-                          <td><font color="#DF0101">{{ $item->montant-$item->paye }} Dhs</font></td>
-                          <td align="center">
-                          </td>
-                        </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="box-footer"></div>
-          </div>
-          {{-- *********************************** factures OPEN ************************************* --}}
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-12">
-          {{-- *********************************** Payements ************************************* --}
-          <div class="box">
-          <div class="box-header with-border">
-          <h3 class="box-title">Payements</h3>
+      {{-- *********************************** Factures OPEN ************************************* --}}
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">Factures non payées <span class="badge badge-succuess badge-pill" title="Factures non payées"> {{ $facturesOpen->count() }}</span></h3>
           <div class="box-tools pull-right">
-          <button data-toggle="modal" href="#modalAddFactures" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau Payement</button>
-          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-          <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            <!--button data-toggle="modal" href="#modalAddFactures" class="btn btn-default" title="effectuer un payement pour la dernière facture ouverte"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau payement</button-->
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
         </div>
+        <div class="box-body">
+          <div class="row">
+            <div class="col-md-12">
+              <table id="facturesOpenTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                <thead><tr><th> # </th><th>Date</th><th>Nombre de ventes</th><th>Total</th><th>Payé</th><th>Reste</th><th>Outils</th></tr></thead>
+                <tbody>
+                  @foreach($facturesOpen as $item)
+                    <tr align="center" ondblclick="window.location.href='{{ route("facture", $item->id_facture) }}'"  title="Double click pour plus de détails" {{ $item->ferme ? 'class=warning' : '' }}>
+                      <td>{{ $loop->iteration }}</td>
+                      <td>{{ formatDateTime($item->created_at) }}</td>
+                      <td>{{ $item->nombre_ventes }}</td>
+                      <td>{{ $item->montant }} Dhs</td>
+                      <td>{{ $item->paye or 0 }} Dhs</td>
+                      <td><font color="#DF0101">{{ $item->reste }} Dhs</font></td>
+                      <td align="center">
+                        <i class="fa fa-credit-card" data-toggle="modal" data-target="#modalAddPayement" onclick='addPayementFunction({{ $item->id_facture }},"{{ $item->created_at }}" ,{{ $item->montant }},{{ $item->paye or 0 }});' title="ajouter payement" ></i>
+                        <i class="fa fa-info" onclick="window.location.href='{{ route('facture',[$item->id_facture]) }}'" title="Plus de details"></i>
+                        <!--i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateFacture" onclick='updateFactureFunction({{ $item->id_facture }},"{{ $item->created_at }}" );' title="Modifier" ></i-->
+                        <!--i class="glyphicon glyphicon-trash" onclick="deleteFactureFunction({{ $item->id_facture }},'{{ formatDateTime($item->created_at) }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i-->
+                      </td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="box-footer"></div>
       </div>
-      <div class="box-body">
-      <div class="row">
-      <div class=" col-md-12">
-      <table id="payementsTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
-      <thead><tr><th> # </th><th>Date</th><th>Montant</th><th>Outils</th></tr></thead>
-      <tbody>
-      @foreach($payements as $item)
-      <tr align="center" ondblclick="window.location.href='{{ route("client", $item->id_facture) }}'" title="Double click pour plus de détails" >
-      <td>{{ $loop->iteration }}</td>
-      <td>{{ formatDateTime($item->created_at) }}</td>
-      <td><a href="mailto: {{ $item->email }}">{{ $item->email }}</a></td>
-      <td align="center">
-      <i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateClient"
-      onclick='updateClientFunction({{ $item->id_client }},"{{ $item->nom }}","{{ $item->prenom }}","{{ $item->email }}","{{ $item->tel }}","{{ $item->description }}");' title="Modifier" ></i>
-      <i class="glyphicon glyphicon-trash" onclick="deleteClientFunction({{ $item->id_client }},'{{ $item->nom }}','{{ $item->prenom }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i>
-    </td>
-  </tr>
-@endforeach
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="box-footer"></div>
-</div>
-{{-- *********************************** Payements ************************************* --}}
-</div>
-</div>
+      {{-- *********************************** factures OPEN ************************************* --}}
+    </div>
 
-</div>
+  </div>
 
+  <div class="row">
 
-</div>
+    <div class="col-md-6">
+      {{-- *********************************** Factures Closed ************************************* --}}
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">Factures payées (Fermée) <span class="badge badge-succuess badge-pill" title="Factures payées">{{ $facturesClosed->count() }}</span></h3>
+          <div class="box-tools pull-right">
+            <!--button data-toggle="modal" href="#modalAddFactures" class="btn btn-default" title="effectuer un payement pour la dernière facture ouverte"><i class="glyphicon glyphicon-plus-sign"></i> Nouveau payement</button-->
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div>
+        <div class="box-body">
+          <div class="row">
+            <div class="col-md-12">
+              <table id="facturesClosedTable" class="display table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                <thead><tr><th> # </th><th>Date</th><th>Nombre de ventes</th><th>Total</th><th>Payé</th><th>Reste</th><th>Outils</th></tr></thead>
+                <tbody>
+                  @foreach($facturesClosed as $item)
+                    <tr align="center" ondblclick="window.location.href='{{ route("facture", $item->id_facture) }}'" title="Double click pour plus de détails" {{-- $item->ferme ? 'class=warning' : '' --}}>
+                      <td>{{ $loop->iteration }}</td>
+                      <td>{{ formatDateTime($item->created_at) }}</td>
+                      <td>{{ $item->nombre_ventes }}</td>
+                      <td>{{ $item->montant }} Dhs</td>
+                      <td>{{ $item->paye or 0 }} Dhs</td>
+                      <td><font color="#DF0101">{{ $item->reste }} Dhs</font></td>
+                      <td align="center">
+                        <i class="fa fa-info" onclick="window.location.href='{{ route('facture',[$item->id_facture]) }}'" title="Plus de details"></i>
+                        <!--i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateFacture" onclick='updateFactureFunction({{ $item->id_facture }},"{{ $item->created_at }}" );' title="Modifier" ></i-->
+                        <!--i class="glyphicon glyphicon-trash" onclick="deleteFactureFunction({{ $item->id_facture }},'{{ formatDateTime($item->created_at) }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i-->
+                      </td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="box-footer"></div>
+      </div>
+      {{-- *********************************** factures Closed ************************************* --}}
+    </div>
+  </div>
 
 @endsection
 
@@ -165,136 +166,90 @@
   {{-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ --}}
 
   <div class="CRUD Payement">
+    <script>
+    function addPayementFunction(id_facture, date, montantFacture, montantPaye){
+
+      document.getElementById('id_facture_payement').value = id_facture;
+      document.getElementById('date_facture_payement').value = date;
+      document.getElementById('montantTotal_facture_payement').value = montantFacture;
+      document.getElementById('montantPaye_facture_payement').value = montantPaye;
+      document.getElementById('montantReste_facture_payement').value = montantFacture-montantPaye;
+      document.getElementById('montant').max = montantFacture-montantPaye;
+    }
+    </script>
 
     <form id="formDeletePayement" method="POST" action="{{ route('deletePayement') }}">
       @csrf
       <input type="hidden" id="delete_id_payement" name="id_payement" />
     </form>
 
-    {{-- *****************************    add peyement   ********************************************** --}}
-    <div class="modal fade" id="modalAddClient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      {{-- Form add Client --}}
-      <form method="POST" action="{{ route('addClient') }}">
+    {{-- *****************************    add payement   ********************************************** --}}
+    <div class="modal fade" id="modalAddPayement" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      {{-- Form add Payement --}}
+      <form method="POST" action="{{ route('addPayement') }}">
         @csrf
 
-        <div class="modal-dialog modal-md" role="document">
+        <input type="hidden" name="id_facture" id="id_facture_payement">
+
+        <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
+
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Création d'un client</h4>
+              <h4 class="modal-title">Ajout de payement</h4>
             </div>
+
             <div class="modal-body">
               <div class="row">
-                <div class="col-md-5">
-                  {{-- Nom --}}
+                <div class="col-md-4 col-md-offset-4">
+                  {{-- Date Facture --}}
                   <div class="form-group has-feedback">
-                    <label>Nom</label>
-                    <input type="text" class="form-control" placeholder="Nom" name="nom" value="{{ old('nom') }}" required>
-                  </div>
-                </div>
-                <div class="col-md-5">
-                  {{-- Prenom --}}
-                  <div class="form-group has-feedback">
-                    <label>Prenom</label>
-                    <input type="text" class="form-control" placeholder="Prenom" name="prenom" value="{{ old('pernom') }}">
+                    <label>Date de création de la facture</label>
+                    <input type="datetime" class="form-control" id="date_facture_payement" readonly>
                   </div>
                 </div>
               </div>
+
               <div class="row">
-                <div class="col-md-5">
-                  {{-- Email --}}
+                <div class="col-md-4">
+                  {{-- Montant total --}}
                   <div class="form-group has-feedback">
-                    <label>Email</label>
-                    <input type="text" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}">
+                    <label>Montant total</label>
+                    <input type="number" class="form-control" id="montantTotal_facture_payement" readonly>
                   </div>
                 </div>
-                <div class="col-md-5">
-                  {{-- Telephone --}}
+                <div class="col-md-4">
+                  {{-- Montant Paye --}}
                   <div class="form-group has-feedback">
-                    <label>Telephone</label>
-                    <input type="text" class="form-control" placeholder="Telephone" name="tel" value="{{ old('tel') }}">
+                    <label>Montant Paye</label>
+                    <input type="text" class="form-control" id="montantPaye_facture_payement" readonly>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  {{-- Montant reste --}}
+                  <div class="form-group has-feedback">
+                    <label>Reste</label>
+                    <input type="text" class="form-control" id="montantReste_facture_payement" readonly>
                   </div>
                 </div>
               </div>
+
               <div class="row">
-                <div class="col-md-12">
-                  {{-- description --}}
+                <div class="col-md-4 col-md-offset-4">
+                  {{-- Montant --}}
                   <div class="form-group has-feedback">
-                    <label>Description</label>
-                    <textarea class="form-control" name="description">{{ old('description') }}</textarea>
+                    <label>Montant du payement</label>
+                    <input type="number" class="form-control" step="0.01" min="0.00" max="" name="montant" id="montant">
                   </div>
                 </div>
               </div>
             </div>
+
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-primary">Ajouter</button>
             </div>
-          </div>
-        </div>
-      </form>
-    </div>
 
-    {{-- *****************************    update payement   ********************************************** --}}
-    <div class="modal fade" id="modalUpdateClient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      {{-- Form update client --}}
-      <form method="POST" action="{{ route('updateClient') }}">
-        @csrf
-        <input type="hidden" name="id_client" id="update_id_client">
-
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Modification du client</h4>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-md-5">
-                  {{-- Nom --}}
-                  <div class="form-group has-feedback">
-                    <label>Nom</label>
-                    <input type="text" class="form-control" placeholder="Nom" name="nom" value="{{ old('nom') }}" id="update_nom_client" required>
-                  </div>
-                </div>
-                <div class="col-md-5">
-                  {{-- Prenom --}}
-                  <div class="form-group has-feedback">
-                    <label>Prenom</label>
-                    <input type="text" class="form-control" placeholder="Prenom" name="prenom" value="{{ old('pernom') }}" id="update_prenom_client">
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-5">
-                  {{-- Email --}}
-                  <div class="form-group has-feedback">
-                    <label>Email</label>
-                    <input type="text" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}" id="update_email_client">
-                  </div>
-                </div>
-                <div class="col-md-5">
-                  {{-- Telephone --}}
-                  <div class="form-group has-feedback">
-                    <label>Telephone</label>
-                    <input type="text" class="form-control" placeholder="Telephone" name="tel" value="{{ old('tel') }}" id="update_tel_client">
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  {{-- description --}}
-                  <div class="form-group has-feedback">
-                    <label>Description</label>
-                    <textarea class="form-control" name="description" id="update_description_client">{{ old('description') }}</textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Modifier</button>
-            </div>
           </div>
         </div>
       </form>
@@ -384,6 +339,28 @@
 }
 });
 });*/
+
+//*************************************************************************************
+
+//facturesOpen ***********************************************************************
+var facturesClosedTable = $('#facturesClosedTable').DataTable({
+  dom: '<lf<Bt>ip>',
+  lengthMenu: [
+    [ 10, 25, 50, -1 ],
+    [ '10', '25', '50', 'Tout' ]
+  ],
+  searching: true,
+  paging: true,
+  //"autoWidth": true,
+  info: true,
+  order: [[0, "asc"]],
+  stateSave: false,
+  columnDefs: [
+    { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+    { targets: 01, type: "string", visible: true, searchable: true, orderable: true},
+    { targets: 02, type: "num", visible: true, searchable: true, orderable: true},
+  ]
+});
 //*************************************************************************************
 
 });

@@ -22,12 +22,6 @@ Route::get('/a', function () {
 
 Route::get('/s',function(){
   //dd(Session::all());
-
-  $vente_facture = new Vente_facture();
-  $facture = new Facture();
-
-  return Transaction::getNombreArticles(4);
-
 });
 
 
@@ -68,25 +62,28 @@ Route::group(['middleware' => 'user'], function () {
   Route::post('/updateCategorie', 'CategorieController@updateCategorie')->name('updateCategorie');
   Route::post('/deleteCategorie', 'CategorieController@deleteCategorie')->name('deleteCategorie');
 
+  //CRUD Articles --------------------------------------------------------------
   Route::post('/addArticle', 'ArticleController@addArticle')->name('addArticle');
   Route::post('/updateArticle', 'ArticleController@updateArticle')->name('updateArticle');
   Route::post('/deleteArticle', 'ArticleController@deleteArticle')->name('deleteArticle');
 
-  //clients
+  //clients --------------------------------------------------------------------
   Route::get('/clients','ClientController@clients')->name('clients');
   Route::post('/addClient', 'ClientController@addClient')->name('addClient');
   Route::post('/updateClient', 'ClientController@updateClient')->name('updateClient');
   Route::post('/deleteClient', 'ClientController@deleteClient')->name('deleteClient');
+  //----------------------------------------------------------------------------
 
   //Client X -------------------------------------------------------------------
   Route::get('/client/{id_client}','ClientController@client')->name('client');
 
   //CRUD Payement
-  Route::post('/addPayement', 'ClientController@addPayement')->name('addPayement');
-  Route::post('/updatePayement', 'ClientController@updatePayement')->name('updatePayement');
-  Route::post('/deletePayement', 'ClientController@deletePayement')->name('deletePayement');
+  Route::post('/addPayement', 'PayementController@addPayement')->name('addPayement');
+  Route::post('/updatePayement', 'PayementController@updatePayement')->name('updatePayement');
+  Route::post('/deletePayement', 'PayementController@deletePayement')->name('deletePayement');
 
-  //CRUD Facture
+  //Facture --------------------------------------------------------------------
+  Route::get('/facture/{id_facture}','FactureController@facture')->name('facture');
   Route::post('/addFacture', 'ClientController@addFacture')->name('addFacture');
   Route::post('/updateFacture', 'ClientController@updateFacture')->name('updateFacture');
   Route::post('/deleteFacture', 'ClientController@deleteFacture')->name('deleteFacture');

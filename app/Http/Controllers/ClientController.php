@@ -38,7 +38,13 @@ class ClientController extends Controller
     ));
 
     $facturesOpen = collect(DB::select(
-      "SELECT f.id_facture, f.created_at, f.ferme, COUNT(DISTINCT vf.id_vente_facture) as nombre_ventes, SUM(ta.quantite*ta.prix) as montant, SUM(DISTINCT p.montant) as paye
+      "SELECT f.id_facture, f.created_at, f.ferme,
+      COUNT(DISTINCT vf.id_vente_facture) as nombre_ventes,
+      ROUND(SUM(DISTINCT ta.quantite*ta.prix), 2) as montant,
+      ROUND(COUNT(DISTINCT p.id_payement)*SUM(montant)/count(p.id_payement), 2) as paye,
+      ROUND((SUM(DISTINCT ta.quantite*ta.prix)) - (COUNT(DISTINCT p.id_payement)*SUM(montant)/count(p.id_payement)), 2) as reste,
+      SUM(DISTINCT p.montant) as paye2,
+      SUM(p.montant) as paye3
       FROM factures f
       LEFT JOIN vente_facture vf ON vf.id_facture=f.id_facture
       LEFT JOIN transactions t ON t.id_transaction=vf.id_transaction
@@ -47,11 +53,27 @@ class ClientController extends Controller
       WHERE t.id_client=$id_client AND f.ferme!=true
       GROUP BY f.id_facture, f.created_at, f.ferme;"
     ));
+    $facturesClosed = collect(DB::select(
+      "SELECT f.id_facture, f.created_at, f.ferme,
+      COUNT(DISTINCT vf.id_vente_facture) as nombre_ventes,
+      ROUND(SUM(DISTINCT ta.quantite*ta.prix), 2) as montant,
+      ROUND(COUNT(DISTINCT p.id_payement)*SUM(montant)/count(p.id_payement), 2) as paye,
+      ROUND((SUM(DISTINCT ta.quantite*ta.prix)) - (COUNT(DISTINCT p.id_payement)*SUM(montant)/count(p.id_payement)), 2) as reste,
+      SUM(DISTINCT p.montant) as paye2,
+      SUM(p.montant) as paye3
+      FROM factures f
+      LEFT JOIN vente_facture vf ON vf.id_facture=f.id_facture
+      LEFT JOIN transactions t ON t.id_transaction=vf.id_transaction
+      LEFT JOIN transaction_articles ta ON ta.id_transaction=t.id_transaction
+      LEFT JOIN payements p ON p.id_facture=f.id_facture
+      WHERE t.id_client=$id_client AND f.ferme=true
+      GROUP BY f.id_facture, f.created_at, f.ferme;"
+    ));
     //foreach ($facturesOpen as $item ) dump($item);
 
-    $payements = collect(DB::select("SELECT * FROM payements p;"));
+    //$payements = collect(DB::select("SELECT * FROM payements p;"));
 
-    return view('user.client')->with(compact('client','factures','payements','ventes','facturesOpen'));
+    return view('user.client')->with(compact('client','factures','payements','ventes','facturesOpen', 'facturesClosed'));
   }
   //----------------------------------------------------------------------------
 
