@@ -69,6 +69,17 @@
       {{-- *********************************** ventes ************************************* --}}
     </div>
 
+    <form id="formPrintFacture" method="POST" action="{{ route('printFacture') }}" target="_blank">
+      @csrf
+      <input type="hidden" id="print_facture_id_facture" name="id_facture" />
+    </form>
+
+    <script>
+    function printFactureFunction(id_facture){
+      document.getElementById("print_facture_id_facture").value = id_facture;
+      document.getElementById("formPrintFacture").submit();
+    }
+    </script>
 
     <div class="col-md-6">
       {{-- *********************************** Factures OPEN ************************************* --}}
@@ -88,7 +99,7 @@
                 <thead><tr><th> # </th><th>Date</th><th>Nombre de ventes</th><th>Total</th><th>Payé</th><th>Reste</th><th>Outils</th></tr></thead>
                 <tbody>
                   @foreach($facturesOpen as $item)
-                    <tr align="center" ondblclick="window.location.href='{{ route("facture", $item->id_facture) }}'"  title="Double click pour plus de détails" {{ $item->ferme ? 'class=warning' : '' }}>
+                    <tr align="center">
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ formatDateTime($item->created_at) }}</td>
                       <td>{{ $item->nombre_ventes }}</td>
@@ -97,9 +108,7 @@
                       <td><font color="#DF0101">{{ $item->reste }} Dhs</font></td>
                       <td align="center">
                         <i class="fa fa-credit-card" data-toggle="modal" data-target="#modalAddPayement" onclick='addPayementFunction({{ $item->id_facture }},"{{ $item->created_at }}" ,{{ $item->montant }},{{ $item->paye or 0 }});' title="ajouter payement" ></i>
-                        <i class="fa fa-info" onclick="window.location.href='{{ route('facture',[$item->id_facture]) }}'" title="Plus de details"></i>
-                        <!--i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateFacture" onclick='updateFactureFunction({{ $item->id_facture }},"{{ $item->created_at }}" );' title="Modifier" ></i-->
-                        <!--i class="glyphicon glyphicon-trash" onclick="deleteFactureFunction({{ $item->id_facture }},'{{ formatDateTime($item->created_at) }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i-->
+                        <i class="fa fa-print" onclick="printFactureFunction({{ $item->id_facture }})" title="Imprimer la facture"></i>
                       </td>
                     </tr>
                   @endforeach
@@ -135,7 +144,7 @@
                 <thead><tr><th> # </th><th>Date</th><th>Nombre de ventes</th><th>Total</th><th>Payé</th><th>Reste</th><th>Outils</th></tr></thead>
                 <tbody>
                   @foreach($facturesClosed as $item)
-                    <tr align="center" ondblclick="window.location.href='{{ route("facture", $item->id_facture) }}'" title="Double click pour plus de détails" {{-- $item->ferme ? 'class=warning' : '' --}}>
+                    <tr align="center">
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ formatDateTime($item->created_at) }}</td>
                       <td>{{ $item->nombre_ventes }}</td>
@@ -143,9 +152,7 @@
                       <td>{{ $item->paye or 0 }} Dhs</td>
                       <td><font color="#DF0101">{{ $item->reste }} Dhs</font></td>
                       <td align="center">
-                        <i class="fa fa-info" onclick="window.location.href='{{ route('facture',[$item->id_facture]) }}'" title="Plus de details"></i>
-                        <!--i class="fa fa-edit" data-toggle="modal" data-target="#modalUpdateFacture" onclick='updateFactureFunction({{ $item->id_facture }},"{{ $item->created_at }}" );' title="Modifier" ></i-->
-                        <!--i class="glyphicon glyphicon-trash" onclick="deleteFactureFunction({{ $item->id_facture }},'{{ formatDateTime($item->created_at) }}');" data-placement="bottom" data-original-title="Supprimer" data-toggle="tooltip" ></i-->
+                        <i class="fa fa-print" onclick="printFactureFunction({{ $item->id_facture }})" title="Imprimer la facture"></i>
                       </td>
                     </tr>
                   @endforeach
@@ -323,46 +330,30 @@
       ]
     });
 
-    // Handle form submission event (enable the entire table to be submitted)
-    /*  $('#formAddFacture').on('submit', function(e){
-    var form = this;
-    // Encode a set of form elements from all pages as an array of names and values
-    var params = facturesOpenTable.$('input,select,text,checkbox, number').serializeArray();
-    // Iterate over all form elements
-    $.each(params, function(){
-    // If element doesn't exist in DOM
-    if(!$.contains(document, form[this.name])){
-    // Create a hidden element
-    $(form).append(
-    $('<input>').attr('type', 'hidden').attr('name', this.name).val(this.value)
-  );
-}
-});
-});*/
 
-//*************************************************************************************
+    //*************************************************************************************
 
-//facturesOpen ***********************************************************************
-var facturesClosedTable = $('#facturesClosedTable').DataTable({
-  dom: '<lf<Bt>ip>',
-  lengthMenu: [
-    [ 10, 25, 50, -1 ],
-    [ '10', '25', '50', 'Tout' ]
-  ],
-  searching: true,
-  paging: true,
-  //"autoWidth": true,
-  info: true,
-  order: [[0, "asc"]],
-  stateSave: false,
-  columnDefs: [
-    { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
-    { targets: 01, type: "string", visible: true, searchable: true, orderable: true},
-    { targets: 02, type: "num", visible: true, searchable: true, orderable: true},
-  ]
-});
-//*************************************************************************************
+    //facturesOpen ***********************************************************************
+    var facturesClosedTable = $('#facturesClosedTable').DataTable({
+      dom: '<lf<Bt>ip>',
+      lengthMenu: [
+        [ 10, 25, 50, -1 ],
+        [ '10', '25', '50', 'Tout' ]
+      ],
+      searching: true,
+      paging: true,
+      //"autoWidth": true,
+      info: true,
+      order: [[0, "asc"]],
+      stateSave: false,
+      columnDefs: [
+        { targets: 00, type: "num", visible: false, searchable: false, orderable: true},
+        { targets: 01, type: "string", visible: true, searchable: true, orderable: true},
+        { targets: 02, type: "num", visible: true, searchable: true, orderable: true},
+      ]
+    });
+    //*************************************************************************************
 
-});
+  });
 </script>
 @endsection

@@ -171,7 +171,7 @@ class ClientController extends Controller
   }
   public function deleteClient(Request $request){
     try{
-      if(Facture::where('id_client',$request->id_client)->get()->first() != null){
+      if(Transaction::where('id_client',$request->id_client)->get()->first() != null){
         return redirect()->back()->with('alert_warning',"Élément utilisé ailleurs, donc impossible de le supprimer");
       }
       else{

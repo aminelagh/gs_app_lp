@@ -53,7 +53,7 @@
   article:after { clear: both; content: ""; display: table; }
   article h1 { clip: rect(0 0 0 0); position: absolute; }
 
-  article address { float: left; font-size: 125%; font-weight: bold; }
+  article address { float: left; font-size: 100%;  }
 
   /* table meta & balance */
   table.meta, table.balance { float: right; width: 36%; }
@@ -122,20 +122,20 @@ span:empty { display: none; }
   <article>
     <address contenteditable>
       <p>
-        {{ $detail->client != null ? $detail->client : '' }}
+        Client: <b>{{ $client->nom != null ? $client->nom : '' }} {{ $client->prenom != null ? $client->prenom : '' }}</b>
         <br>
-        {{ $detail->description != null ? $detail->description : '' }}
+        Tel: <b>{{ $client->tel != null ? $client->tel : '' }}</b>
       </p>
     </address>
 
     <table class="meta">
       <tr>
         <th><span contenteditable>Facture</span></th>
-        <td><span contenteditable>{{ $vente->id_transaction }}</span></td>
+        <td><span contenteditable>{{ $facture->id_facture }}</span></td>
       </tr>
       <tr>
         <th><span contenteditable>Date</span></th>
-        <td><span contenteditable>{{ $vente->created_at }}</span></td>
+        <td><span contenteditable>{{ formatDateTime($facture->created_at) }}</span></td>
       </tr>
       <!--tr>
       <th><span contenteditable>Total</span></th>
@@ -154,46 +154,50 @@ span:empty { display: none; }
       </tr>
     </thead>
     <tbody>
+      {{--
       @php
       $total = 0;
-      @endphp
-      @foreach($articles as $item)
-        <tr>
-          <td>{{ $loop->iteration }}</td>
-          <td>{{ $item->id_article }}</td>
-          <td>{{ $item->prix }} Dhs</td>
-          <td>{{ $item->quantite }}</td>
-          <td>{{ $item->prix*$item->quantite }} Dhs</td>
-        </tr>
-        @php
-        $total += $item->prix*$item->quantite;
-        @endphp
-      @endforeach
-    </tbody>
-  </table>
+    @endphp
+    --}}
+    @foreach($articles as $item)
+      <tr>
+        <td>{{ $loop->iteration }}</td>
+        <td>{{ $item->code }} - {{ $item->designation }}</td>
+        <td>{{ $item->prix }} Dhs</td>
+        <td>{{ $item->quantite }}</td>
+        <td>{{ $item->montant}} Dhs</td>
+      </tr>
+      {{--
+      @php
+      $total += $item->prix*$item->quantite;
+    @endphp
+    --}}
+  @endforeach
+</tbody>
+</table>
 
-  <table class="balance">
-    <tr>
-      <th><span contenteditable>Total</span></th>
-      <td>{{ $total }} Dhs</span></td>
-    </tr>
-    <!--tr>
-    <th><span contenteditable>Amount Paid</span></th>
-    <td><span data-prefix>$</span><span contenteditable>0.00</span></td>
-  </tr>
+<table class="balance">
   <tr>
-  <th><span contenteditable>Balance Due</span></th>
-  <td><span data-prefix>$</span><span>600.00</span></td>
+    <th><span contenteditable>Total</span></th>
+    <td>{{ $total }} Dhs</span></td>
+  </tr>
+  <!--tr>
+  <th><span contenteditable>Amount Paid</span></th>
+  <td><span data-prefix>$</span><span contenteditable>0.00</span></td>
+</tr>
+<tr>
+<th><span contenteditable>Balance Due</span></th>
+<td><span data-prefix>$</span><span>600.00</span></td>
 </tr-->
 </table>
 
 </article>
 
-<aside>
+<!--aside>
   <h1><span contenteditable>Additional Notes</span></h1>
   <div contenteditable>
     <p>A finance charge of 1.5% will be made on unpaid balances after 30 days.</p>
   </div>
-</aside>
+</aside-->
 </body>
 </html>

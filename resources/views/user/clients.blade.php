@@ -12,7 +12,7 @@
 
   <div class="row">
 
-    <div class="col-md-8">
+    <div class="col-md-12">
       {{-- *********************************** clients ************************************* --}}
       <div class="box">
         <div class="box-header with-border">
@@ -80,14 +80,14 @@
             </div>
             <div class="modal-body">
               <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-6">
                   {{-- Nom --}}
                   <div class="form-group has-feedback">
                     <label>Nom</label>
                     <input type="text" class="form-control" placeholder="Nom" name="nom" value="{{ old('nom') }}" required>
                   </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                   {{-- Prenom --}}
                   <div class="form-group has-feedback">
                     <label>Prenom</label>
@@ -96,7 +96,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-7">
                   {{-- Email --}}
                   <div class="form-group has-feedback">
                     <label>Email</label>
@@ -145,14 +145,14 @@
             </div>
             <div class="modal-body">
               <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-6">
                   {{-- Nom --}}
                   <div class="form-group has-feedback">
                     <label>Nom</label>
                     <input type="text" class="form-control" placeholder="Nom" name="nom" value="{{ old('nom') }}" id="update_nom_client" required>
                   </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                   {{-- Prenom --}}
                   <div class="form-group has-feedback">
                     <label>Prenom</label>
@@ -161,7 +161,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-7">
                   {{-- Email --}}
                   <div class="form-group has-feedback">
                     <label>Email</label>
@@ -211,12 +211,11 @@
         [ 5, 10, 25, 50, -1 ],
         [ '5', '10', '25', '50', 'Tout' ]
       ],
-      "columnDefs": [
-        //{ targets:-1, visible: true, orderable: true, searchable: true},
-        //{ targets: 0, visible: true, type: "num"},
+      columnDefs: [
+        { targets: 0, visible: false, type: "num"},
         //{ targets: 1, visible: true},
       ],
-      //order: [[ 0, "asc" ]],
+      order: [[ 0, "asc" ]],
     });
 
   });

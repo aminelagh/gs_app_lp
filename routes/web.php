@@ -85,8 +85,9 @@ Route::group(['middleware' => 'user'], function () {
   //Facture --------------------------------------------------------------------
   Route::get('/facture/{id_facture}','FactureController@facture')->name('facture');
   Route::post('/addFacture', 'ClientController@addFacture')->name('addFacture');
-  Route::post('/updateFacture', 'ClientController@updateFacture')->name('updateFacture');
-  Route::post('/deleteFacture', 'ClientController@deleteFacture')->name('deleteFacture');
+  //Route::post('/updateFacture', 'ClientController@updateFacture')->name('updateFacture');
+  //Route::post('/deleteFacture', 'ClientController@deleteFacture')->name('deleteFacture');
+  Route::post('/printFacture', 'FactureController@printFacture')->name('printFacture');
 
   //small window
   Route::get('/detailsVente/{id_transaction}','ClientController@detailsVente')->name('detailsVente');
